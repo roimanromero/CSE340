@@ -202,24 +202,3 @@ footer {
       grid-template-columns: repeat(2, 1fr);
   }
 }
-.vehicle-detail {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin: 2rem;
-}
-
-.vehicle-detail img {
-  max-width: 100%;
-  height: auto;
-  flex: 1 1 300px;
-}
-
-.vehicle-info {
-  flex: 1 1 300px;
-}
-
-.vehicle-info h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
