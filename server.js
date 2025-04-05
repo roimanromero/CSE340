@@ -11,7 +11,7 @@ const env = require("dotenv").config()
 const app = express()
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
-
+const utilities = require("./utilities/")
 /* ***********************
  * View Engine and Templates
  *************************/
