@@ -25,24 +25,3 @@ Util.getNav = async function (req, res, next) {
 }
 
 module.exports = Util
-function buildVehicleDetailHtml(vehicle) {
-  let vehicleHtml = `
-    <div class="vehicle-detail">
-      <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}" />
-      <h2>${vehicle.inv_make} ${vehicle.inv_model} Details</h2>
-      <ul>
-        <li><strong>Price:</strong> $${Number(vehicle.inv_price).toLocaleString()}</li>
-        <li><strong>Year:</strong> ${vehicle.inv_year}</li>
-        <li><strong>Mileage:</strong> ${Number(vehicle.inv_miles).toLocaleString()} miles</li>
-        <li><strong>Color:</strong> ${vehicle.inv_color}</li>
-        <li><strong>Description:</strong> ${vehicle.inv_description}</li>
-      </ul>
-    </div>
-  `;
-  return vehicleHtml;
-}
-
-module.exports = {
-  buildVehicleDetailHtml,
-  // other exports...
-};
