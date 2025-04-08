@@ -38,8 +38,16 @@ async function getVehicleById(inv_id) {
   }
 }
 
+async function getClassificationNameById(classification_id) {
+  const sql = "SELECT classification_name FROM classification WHERE classification_id = $1";
+  const data = await pool.query(sql, [classification_id]);
+  return data.rows[0]?.classification_name || "Unknown";
+}
+
+
 module.exports = {
   getClassifications,
   getInventoryByClassificationId,
   getVehicleById,
+  getClassificationNameById,
 };

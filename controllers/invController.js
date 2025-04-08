@@ -4,32 +4,29 @@ const utilities = require("../utilities");
 // Controller for classification list view
 async function buildByClassificationId(req, res, next) {
   try {
-    console.log("Route hit: /inv/type/:classificationId");
-
     const classification_id = req.params.classificationId;
-    console.log("Classification ID:", classification_id);
-
     const data = await invModel.getInventoryByClassificationId(classification_id);
-    console.log("Vehicle data:", data); // ✅ see what comes back
-
     const nav = await utilities.getNav();
 
     if (!data || data.length === 0) {
       throw new Error("No vehicles found for this classification.");
     }
 
+    // ✅ NEW: fetch classification name directly
+    const classificationName = await invModel.getClassificationNameById(classification_id);
+
     const grid = utilities.buildClassificationGrid(data);
-    const classificationName = data[0].classification_name;
 
     res.render("inventory/classification", {
       title: `${classificationName} Vehicles`,
       nav,
-      grid,
+      grid
     });
   } catch (error) {
     next(error);
   }
 }
+
 
 
 // Controller for vehicle detail view
