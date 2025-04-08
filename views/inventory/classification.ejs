@@ -3,9 +3,7 @@
 
 <main>
   <h1><%= title %></h1>
-  <div class="vehicle-wrapper">
-    <%- grid %> <!-- Correct: output the HTML string safely -->
-  </div>
+  <%- grid %> <!-- No extra wrapper to preserve grid styling -->
 </main>
 
 <%- include('../partials/footer') %>

@@ -1,35 +1,47 @@
-const invModel = require("../models/inventory-model");
+const invModel = require("../models/inventory-model")
 
+/**
+ * Generates the site-wide navigation menu.
+ */
 async function getNav() {
-  let data = await invModel.getClassifications();
-  let list = "<ul>";
-  list += '<li><a href="/" title="Home page">Home</a></li>';
-  data.forEach((row) => {
-    list += "<li>";
-    list +=
-      '<a href="/inv/type/' +
-      row.classification_id +
-      '" title="See our inventory of ' +
-      row.classification_name +
-      ' vehicles">' +
-      row.classification_name +
-      "</a>";
-    list += "</li>";
-  });
-  list += "</ul>";
-  return list;
+  try {
+    const data = await invModel.getClassifications()
+    let navList = `<ul>`
+    navList += `<li><a href="/" title="Home page">Home</a></li>`
+    data.forEach(({ classification_id, classification_name }) => {
+      navList += `
+        <li>
+          <a href="/inv/type/${classification_id}" 
+             title="See our inventory of ${classification_name} vehicles">
+            ${classification_name}
+          </a>
+        </li>`
+    })
+    navList += `</ul>`
+    return navList
+  } catch (error) {
+    console.error("Error building nav:", error)
+    return `<ul><li><a href="/" title="Home page">Home</a></li></ul>`
+  }
 }
 
+/**
+ * Builds the HTML for the vehicle detail view.
+ */
 function buildVehicleDetailHtml(vehicle) {
   const priceFormatted = Number(vehicle.inv_price).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
-  });
-  const milesFormatted = Number(vehicle.inv_miles).toLocaleString("en-US");
+  })
+
+  const milesFormatted = Number(vehicle.inv_miles).toLocaleString("en-US")
 
   return `
     <div class="vehicle-detail-container">
-      <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+      <img src="${vehicle.inv_image}" 
+           alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}" 
+           class="vehicle-detail-img">
+      
       <div class="vehicle-info">
         <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
         <p><strong>Price:</strong> ${priceFormatted}</p>
@@ -38,35 +50,48 @@ function buildVehicleDetailHtml(vehicle) {
         <p><strong>Miles:</strong> ${milesFormatted} miles</p>
       </div>
     </div>
-  `;
+  `
 }
 
+/**
+ * Builds the HTML grid for a classification listing page.
+ */
 function buildClassificationGrid(data) {
-  let grid = '<ul class="inv-display">';
-  data.forEach((vehicle) => {
+  if (!data?.length) {
+    return `<p class="notice">Sorry, no vehicles matched your search.</p>`
+  }
+
+  let grid = '<section class="vehicle-grid">'
+  data.forEach(vehicle => {
+    const formattedPrice = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(vehicle.inv_price)
+
     grid += `
-      <li>
+      <div class="vehicle-card">
         <a href="/inv/detail/${vehicle.inv_id}" title="View ${vehicle.inv_make} ${vehicle.inv_model} details">
-          <img src="${vehicle.inv_thumbnail}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+          <img src="${vehicle.inv_thumbnail}" 
+               alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}" 
+               loading="lazy">
         </a>
-        <div class="namePrice">
-          <hr>
+        <div class="vehicle-card-content">
           <h2>
-            <a href="/inv/detail/${vehicle.inv_id}" title="View ${vehicle.inv_make} ${vehicle.inv_model} details">
-              ${vehicle.inv_make} ${vehicle.inv_model}
+            <a href="/inv/detail/${vehicle.inv_id}">
+              ${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}
             </a>
           </h2>
-          <span>$${Number(vehicle.inv_price).toLocaleString("en-US")}</span>
+          <span>${formattedPrice}</span>
         </div>
-      </li>
-    `;
-  });
-  grid += "</ul>";
-  return grid;
+      </div>
+    `
+  })
+  grid += '</section>'
+  return grid
 }
 
 module.exports = {
   getNav,
   buildVehicleDetailHtml,
   buildClassificationGrid,
-};
+}

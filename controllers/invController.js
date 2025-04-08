@@ -20,7 +20,7 @@ async function buildByClassificationId(req, res, next) {
     res.render("inventory/classification", {
       title: `${classificationName} Vehicles`,
       nav,
-      grid
+      grid: utilities.buildClassificationGrid(data),
     });
   } catch (error) {
     next(error);

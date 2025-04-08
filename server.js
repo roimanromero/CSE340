@@ -15,6 +15,9 @@ const invRoute = require("./routes/inventoryRoute"); // ✅ this must match the 
 app.use("/inv", invRoute);// ✅ Use the variable you actually defined
 const baseController = require("./controllers/baseController")
 const errorMiddleware = require('./middleware/errorMiddleware');
+const errorRoute = require("./routes/errorRoute");
+app.use("/inventory", errorRoute);
+app.use(express.static("public"))
 
 /* ***********************
  * View Engine and Templates
@@ -35,10 +38,7 @@ app.get("/", baseController.buildHome)
 app.use(async (req, res, next) => {
   next({status: 404, message: 'Sorry, we appear to have lost that page.'})
 })
-app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav();
-  // ...
-});
+
 /* ***********************
 * Express Error Handler
 * Place after all other middleware
@@ -47,10 +47,12 @@ app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
   res.render("errors/error", {
-    title: err.status || 'Server Error',
+    title: "Server Error",
     message: err.message,
+    status: err.status || 500,
     nav
-  })
+  })  
+
 })
 
 /* ***********************
