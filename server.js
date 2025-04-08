@@ -9,6 +9,7 @@ const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
 const app = express()
+const utilities = require("./utilities/");
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const errorMiddleware = require('./middleware/errorMiddleware');
@@ -16,6 +17,7 @@ const errorMiddleware = require('./middleware/errorMiddleware');
 /* ***********************
  * View Engine and Templates
  *************************/
+
 app.set("view engine", "ejs")
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout") // not at views root
@@ -31,7 +33,10 @@ app.get("/", baseController.buildHome)
 app.use(async (req, res, next) => {
   next({status: 404, message: 'Sorry, we appear to have lost that page.'})
 })
-
+app.use(async (err, req, res, next) => {
+  let nav = await utilities.getNav();
+  // ...
+});
 /* ***********************
 * Express Error Handler
 * Place after all other middleware

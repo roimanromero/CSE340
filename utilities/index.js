@@ -1,15 +1,11 @@
-const invModel = require("../models/inventory-model")
-const Util = {}
+const invModel = require("../models/inventory-model");
 
-/* ************************
- * Constructs the nav HTML unordered list
- ************************** */
-Util.getNav = async function (req, res, next) {
-  let data = await invModel.getClassifications()
-  let list = "<ul>"
-  list += '<li><a href="/" title="Home page">Home</a></li>'
+async function getNav() {
+  let data = await invModel.getClassifications();
+  let list = "<ul>";
+  list += '<li><a href="/" title="Home page">Home</a></li>';
   data.rows.forEach((row) => {
-    list += "<li>"
+    list += "<li>";
     list +=
       '<a href="/inv/type/' +
       row.classification_id +
@@ -17,23 +13,36 @@ Util.getNav = async function (req, res, next) {
       row.classification_name +
       ' vehicles">' +
       row.classification_name +
-      "</a>"
-    list += "</li>"
-  })
-  list += "</ul>"
-  return list
+      "</a>";
+    list += "</li>";
+  });
+  list += "</ul>";
+  return list;
 }
 
-module.exports = Util
-// utils/index.js
-module.exports.formatVehicleData = (vehicleData) => {
-  return `
-      <h1>${vehicleData.make} ${vehicleData.model}</h1>
-      <img src="${vehicleData.image_url}" alt="${vehicleData.make} ${vehicleData.model}" />
-      <p><strong>Year:</strong> ${vehicleData.year}</p>
-      <p><strong>Price:</strong> $${vehicleData.price.toLocaleString()}</p>
-      <p><strong>Mileage:</strong> ${vehicleData.mileage.toLocaleString()} miles</p>
-      <p><strong>Description:</strong> ${vehicleData.description}</p>
-  `;
-};
+function buildVehicleDetailHtml(vehicle) {
+  const priceFormatted = Number(vehicle.inv_price).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+  const milesFormatted = Number(vehicle.inv_miles).toLocaleString("en-US");
 
+  return `
+    <div class="vehicle-detail-container">
+      <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+      <div class="vehicle-info">
+        <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
+        <p><strong>Price:</strong> ${priceFormatted}</p>
+        <p><strong>Description:</strong> ${vehicle.inv_description}</p>
+        <p><strong>Color:</strong> ${vehicle.inv_color}</p>
+        <p><strong>Miles:</strong> ${milesFormatted} miles</p>
+      </div>
+    </div>
+  `;
+}
+
+// ✅ Single export object with both functions
+module.exports = {
+  getNav,
+  buildVehicleDetailHtml,
+};

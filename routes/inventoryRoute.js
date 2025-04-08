@@ -19,3 +19,5 @@ module.exports = {
   getVehicleById,
   // other functions...
 };
+// Route to display a specific vehicle's detail page
+router.get("/detail/:inv_id", invController.buildVehicleDetailView);
