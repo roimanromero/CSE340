@@ -11,6 +11,8 @@ const env = require("dotenv").config()
 const app = express()
 const utilities = require("./utilities/");
 const static = require("./routes/static")
+const invRoute = require("./routes/inventoryRoute"); // ✅ this must match the filename
+app.use("/inv", invRoute);// ✅ Use the variable you actually defined
 const baseController = require("./controllers/baseController")
 const errorMiddleware = require('./middleware/errorMiddleware');
 

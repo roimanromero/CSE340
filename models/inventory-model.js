@@ -1,16 +1,45 @@
 const pool = require("../database/");
 
-/* Get all classification names */
 async function getClassifications() {
-  return await pool.query("SELECT * FROM public.classification ORDER BY classification_name");
+  try {
+    const data = await pool.query(
+      "SELECT * FROM public.classification ORDER BY classification_name"
+    );
+    return data.rows;
+  } catch (error) {
+    console.error("getClassifications error:", error);
+    throw error;
+  }
 }
 
-/* Example: Get vehicle by ID (you'll use this later for detail view) */
-async function getVehicleById(id) {
-  return await pool.query("SELECT * FROM inventory WHERE inv_id = $1", [id]);
+async function getInventoryByClassificationId(classification_id) {
+  try {
+    const data = await pool.query(
+      "SELECT * FROM public.inventory WHERE classification_id = $1",
+      [classification_id]
+    );
+    return data.rows;
+  } catch (error) {
+    console.error("getInventoryByClassificationId error:", error);
+    throw error;
+  }
+}
+
+async function getVehicleById(inv_id) {
+  try {
+    const data = await pool.query(
+      "SELECT * FROM public.inventory WHERE inv_id = $1",
+      [inv_id]
+    );
+    return data.rows[0];
+  } catch (error) {
+    console.error("getVehicleById error:", error);
+    throw error;
+  }
 }
 
 module.exports = {
   getClassifications,
+  getInventoryByClassificationId,
   getVehicleById,
 };
