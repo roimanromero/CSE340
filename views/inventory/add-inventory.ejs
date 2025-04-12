@@ -1,0 +1,54 @@
+<% include('../partials/header.ejs') %>
+
+<h1>Add New Vehicle</h1>
+
+<!-- Flash Message Display -->
+<% if (messages && messages.length > 0) { %>
+  <div class="flash-messages">
+    <% messages.forEach(function(message) { %>
+      <div class="flash-message"><%= message %></div>
+    <% }); %>
+  </div>
+<% } %>
+
+<form id="addInventoryForm" action="/inv/add-inventory" method="POST">
+  <label for="classification_id">Classification:</label>
+  <%= classificationSelect %>
+
+  <label for="make">Make:</label>
+  <input type="text" id="make" name="make" required>
+
+  <label for="model">Model:</label>
+  <input type="text" id="model" name="model" required>
+
+  <label for="year">Year:</label>
+  <input type="number" id="year" name="year" required>
+
+  <label for="description">Description:</label>
+  <textarea id="description" name="description" required></textarea>
+
+  <label for="price">Price:</label>
+  <input type="number" id="price" name="price" required step="0.01">
+
+  <label for="image_path">Image Path:</label>
+  <input type="text" id="image_path" name="image_path" value="/path/to/default/image.jpg" required>
+
+  <label for="thumbnail_path">Thumbnail Path:</label>
+  <input type="text" id="thumbnail_path" name="thumbnail_path" value="/path/to/default/thumbnail.jpg" required>
+
+  <label for="miles">Miles:</label>
+  <input type="number" id="miles" name="miles" required>
+
+  <label for="color">Color:</label>
+  <input type="text" id="color" name="color" required>
+
+  <button type="submit">Add Vehicle</button>
+</form>
+
+<% include('../partials/footer.ejs') %>
+
+<script>
+  document.getElementById('addInventoryForm').addEventListener('submit', function(event) {
+    // Add client-side validation as needed
+  });
+</script>

@@ -1,42 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Add New Classification</title>
-  <script>
-    // Client-side validation: Allow only letters and numbers (no spaces or special characters)
-    function validateForm() {
-      const classificationName = document.getElementById('classificationName').value;
-      const regex = /^[A-Za-z0-9]+$/;
-      if (!regex.test(classificationName)) {
-        alert("Classification name must only contain letters and numbers (no spaces or special characters).");
-        return false;
-      }
-      return true;
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/navigation', { nav: nav }) %>
+
+<main>
+  <h1>Add New Classification</h1>
+
+  <!-- Flash Message Display -->
+  <% if (message && message.length > 0) { %>
+    <div class="flash-messages">
+      <% message.forEach(function(msg) { %>
+        <div class="flash-message"><%= msg %></div>
+      <% }); %>
+    </div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="error-message"><%= error %></div>
+  <% } %>
+
+  <form id="addClassificationForm" action="/inv/add-classification" method="POST">
+    <label for="classificationName">Classification Name:</label>
+    <input type="text"
+           id="classificationName"
+           name="classificationName"  
+           required
+           pattern="^[a-zA-Z0-9]+$"
+           title="Only letters and numbers allowed.">
+    <button type="submit">Add Classification</button>
+  </form>
+</main>
+
+<%- include('../partials/footer.ejs') %>
+
+<script>
+  document.getElementById('addClassificationForm').addEventListener('submit', function(event) {
+    const input = document.getElementById('classificationName');
+    const pattern = /^[a-zA-Z0-9]+$/;
+    if (!pattern.test(input.value)) {
+      alert('Classification name must only contain letters and numbers.');
+      event.preventDefault();
     }
-  </script>
-</head>
-<body>
-  <%- include('../partials/header') %>
-  <main>
-    <h1>Add New Classification</h1>
-
-    <!-- Display flash message if available -->
-    <% if (message) { %>
-      <div class="flash-message"><%= message %></div>
-    <% } %>
-    <!-- Display server-side error message if available -->
-    <% if (error) { %>
-      <div class="error-message"><%= error %></div>
-    <% } %>
-
-    <form action="/inv/add-classification" method="POST" onsubmit="return validateForm()">
-      <label for="classificationName">Classification Name:</label>
-      <input type="text" id="classificationName" name="classificationName" 
-             pattern="^[A-Za-z0-9]+$" required>
-      <button type="submit">Add Classification</button>
-    </form>
-  </main>
-  <%- include('../partials/footer') %>
-</body>
-</html>
+  });
+</script>

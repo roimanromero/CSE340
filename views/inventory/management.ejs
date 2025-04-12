@@ -1,21 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title><%= title %></title>
-</head>
-<body>
-  <%- nav %>
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/navigation', { nav: nav }) %>
 
+<main>
   <h1>Inventory Management</h1>
 
+  <!-- Flash Message Display -->
   <% if (message && message.length > 0) { %>
-    <p class="flash-message"><%= message %></p>
+    <div class="flash-messages">
+      <% message.forEach(function(msg) { %>
+        <div class="flash-message"><%= msg %></div>
+      <% }); %>
+    </div>
   <% } %>
 
   <ul>
     <li><a href="/inv/add-classification">Add New Classification</a></li>
-    <li><a href="/inv/add-inventory">Add New Inventory</a></li>
+    <li><a href="/inv/add-inventory">Add New Vehicle</a></li>
   </ul>
-</body>
-</html>
+</main>
+
+<%- include('../partials/footer.ejs') %>
