@@ -3,16 +3,7 @@
 
 <main>
   <h1>Inventory Management</h1>
-
-  <!-- Flash Message Display -->
-  <% if (message && message.length > 0) { %>
-    <div class="flash-messages">
-      <% message.forEach(function(msg) { %>
-        <div class="flash-message"><%= msg %></div>
-      <% }); %>
-    </div>
-  <% } %>
-
+  <%- messages() %>
   <ul>
     <li><a href="/inv/add-classification">Add New Classification</a></li>
     <li><a href="/inv/add-inventory">Add New Vehicle</a></li>

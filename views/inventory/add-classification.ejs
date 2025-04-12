@@ -5,13 +5,7 @@
   <h1>Add New Classification</h1>
 
   <!-- Flash Message Display -->
-  <% if (message && message.length > 0) { %>
-    <div class="flash-messages">
-      <% message.forEach(function(msg) { %>
-        <div class="flash-message"><%= msg %></div>
-      <% }); %>
-    </div>
-  <% } %>
+  <%- messages() %>
 
   <% if (error) { %>
     <div class="error-message"><%= error %></div>

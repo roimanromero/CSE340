@@ -45,7 +45,7 @@ const showManagement = async function (req, res, next) {
     res.render("./inventory/management", {
       title: "Inventory Management",
       nav,
-      message: req.flash("message"),
+      
     });
   } catch (error) {
     next(error);
@@ -58,7 +58,7 @@ const getAddClassification = async function (req, res, next) {
     res.render("./inventory/add-classification", {
       title: "Add New Classification",
       nav,
-      message: req.flash("message"),
+      
       error: null,
     });
   } catch (error) {
@@ -77,7 +77,7 @@ const addClassification = async function (req, res, next) {
       title: "Add New Classification",
       nav,
       error: "Invalid classification name.",
-      message: req.flash("message"),
+      
     });
   }
 
@@ -90,7 +90,7 @@ const addClassification = async function (req, res, next) {
       return res.render("./inventory/management", {
         title: "Inventory Management",
         nav,
-        message: req.flash("message"),
+        
       });
     } else {
       req.flash("message", "Failed to add classification. Please try again.");
@@ -98,7 +98,7 @@ const addClassification = async function (req, res, next) {
         title: "Add New Classification",
         nav,
         error: "Failed to add classification.",
-        message: req.flash("message"),
+        
       });
     }
   } catch (error) {
@@ -108,14 +108,13 @@ const addClassification = async function (req, res, next) {
 const getAddInventory = async function(req, res, next) {
   try {
     const nav = await utilities.getNav();
-    const classifications = await invModel.getClassifications();
-    const classificationSelect = await utilities.buildClassificationList(classifications);
+    const classificationSelect = await utilities.buildClassificationList();
 
     res.render("./inventory/add-inventory", {
       title: "Add New Vehicle",
       nav,
       classificationSelect,
-      message: req.flash("message"),
+      
       error: null
     });
   } catch (error) {
@@ -163,9 +162,10 @@ const addInventory = async function(req, res, next) {
       res.render("./inventory/add-inventory", {
         title: "Add New Vehicle",
         nav,
-        message: req.flash("message"),
+        classificationSelect: await utilities.buildClassificationList(), // also add this back
+        
         error: "Database insert failed."
-      });
+      });      
     }
   } catch (error) {
     next(error);

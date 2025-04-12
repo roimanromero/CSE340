@@ -1,8 +1,5 @@
 const invModel = require("../models/inventory-model")
 
-/**
- * Generates the site-wide navigation menu.
- */
 async function getNav() {
   try {
     const data = await invModel.getClassifications()
@@ -18,16 +15,13 @@ async function getNav() {
         </li>`
     })
     navList += `</ul>`
-    return navList; // Was "generatedNav", now corrected to "navList"
+    return navList
   } catch (error) {
-    console.error('❌ Error loading nav:', error);
-    return '<nav><ul><li>Error loading nav</li></ul></nav>';
+    console.error('❌ Error loading nav:', error)
+    return '<nav><ul><li>Error loading nav</li></ul></nav>'
   }
 }
 
-/**
- * Builds the HTML for the vehicle detail view.
- */
 function buildVehicleDetailHtml(vehicle) {
   const priceFormatted = Number(vehicle.inv_price).toLocaleString("en-US", {
     style: "currency",
@@ -53,9 +47,6 @@ function buildVehicleDetailHtml(vehicle) {
   `
 }
 
-/**
- * Builds the HTML grid for a classification listing page.
- */
 function buildClassificationGrid(data) {
   if (!data?.length) {
     return `<p class="notice">Sorry, no vehicles matched your search.</p>`
@@ -90,8 +81,26 @@ function buildClassificationGrid(data) {
   return grid
 }
 
+// ✅ FIX: Add this missing utility function
+async function buildClassificationList(classification_id = null) {
+  let data = await invModel.getClassifications()
+  let classificationList =
+    '<select name="classification_id" id="classificationList" required>'
+  classificationList += "<option value=''>Choose a Classification</option>"
+  data.forEach((row) => {
+    classificationList += `<option value="${row.classification_id}"`
+    if (classification_id != null && row.classification_id == classification_id) {
+      classificationList += " selected"
+    }
+    classificationList += `>${row.classification_name}</option>`
+  })
+  classificationList += "</select>"
+  return classificationList
+}
+
 module.exports = {
   getNav,
   buildVehicleDetailHtml,
   buildClassificationGrid,
+  buildClassificationList // ✅ export it!
 }

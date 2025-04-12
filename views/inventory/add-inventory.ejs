@@ -1,54 +1,55 @@
-<% include('../partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/navigation', { nav: nav }) %>
 
-<h1>Add New Vehicle</h1>
+<main>
+  <h1>Add New Vehicle</h1>
 
-<!-- Flash Message Display -->
-<% if (messages && messages.length > 0) { %>
-  <div class="flash-messages">
-    <% messages.forEach(function(message) { %>
-      <div class="flash-message"><%= message %></div>
-    <% }); %>
-  </div>
-<% } %>
+  <!-- Flash Message Display -->
+  <%- messages() %>
 
-<form id="addInventoryForm" action="/inv/add-inventory" method="POST">
-  <label for="classification_id">Classification:</label>
-  <%= classificationSelect %>
+  <% if (error) { %>
+    <div class="error-message"><%= error %></div>
+  <% } %>
 
-  <label for="make">Make:</label>
-  <input type="text" id="make" name="make" required>
+  <form id="addInventoryForm" action="/inv/add-inventory" method="POST">
+    <label for="classification_id">Classification:</label>
+    <%- classificationSelect %>
 
-  <label for="model">Model:</label>
-  <input type="text" id="model" name="model" required>
+    <label for="make">Make:</label>
+    <input type="text" id="make" name="make" required>
 
-  <label for="year">Year:</label>
-  <input type="number" id="year" name="year" required>
+    <label for="model">Model:</label>
+    <input type="text" id="model" name="model" required>
 
-  <label for="description">Description:</label>
-  <textarea id="description" name="description" required></textarea>
+    <label for="year">Year:</label>
+    <input type="number" id="year" name="year" required min="1900" max="2100">
 
-  <label for="price">Price:</label>
-  <input type="number" id="price" name="price" required step="0.01">
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
 
-  <label for="image_path">Image Path:</label>
-  <input type="text" id="image_path" name="image_path" value="/path/to/default/image.jpg" required>
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required step="0.01" min="0">
 
-  <label for="thumbnail_path">Thumbnail Path:</label>
-  <input type="text" id="thumbnail_path" name="thumbnail_path" value="/path/to/default/thumbnail.jpg" required>
+    <label for="image_path">Image Path:</label>
+    <input type="text" id="image_path" name="image_path" value="/images/vehicles/no-image.png" required>
 
-  <label for="miles">Miles:</label>
-  <input type="number" id="miles" name="miles" required>
+    <label for="thumbnail_path">Thumbnail Path:</label>
+    <input type="text" id="thumbnail_path" name="thumbnail_path" value="/images/vehicles/no-image-tn.png" required>
 
-  <label for="color">Color:</label>
-  <input type="text" id="color" name="color" required>
+    <label for="miles">Miles:</label>
+    <input type="number" id="miles" name="miles" required min="0">
 
-  <button type="submit">Add Vehicle</button>
-</form>
+    <label for="color">Color:</label>
+    <input type="text" id="color" name="color" required>
 
-<% include('../partials/footer.ejs') %>
+    <button type="submit">Add Vehicle</button>
+  </form>
+</main>
+
+<%- include('../partials/footer.ejs') %>
 
 <script>
   document.getElementById('addInventoryForm').addEventListener('submit', function(event) {
-    // Add client-side validation as needed
+    // Optional client-side validation can go here
   });
 </script>
