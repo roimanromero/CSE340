@@ -293,3 +293,51 @@ footer {
     padding: 15px;
   }
 }
+/* public/css/styles.css */
+body {
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  background-color: #f9f9f9;
+}
+
+form {
+  max-width: 400px;
+  margin: auto;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+button {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #007BFF;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.flash-message {
+  background-color: #ffc;
+  padding: 0.75rem;
+  border: 1px solid #ee0;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+}

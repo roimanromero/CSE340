@@ -5,23 +5,47 @@
 /* ***********************
  * Require Statements
  *************************/
+const session = require("express-session")
+const pool = require('./database/')
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
 const app = express()
 const utilities = require("./utilities/");
 const static = require("./routes/static")
-const invRoute = require("./routes/inventoryRoute"); // ✅ this must match the filename
+const invRoute = require("./routes/inventoryRoutes"); // ✅ this must match the filename
 app.use("/inv", invRoute);// ✅ Use the variable you actually defined
 const baseController = require("./controllers/baseController")
 const errorMiddleware = require('./middleware/errorMiddleware');
 const errorRoute = require("./routes/errorRoute");
 app.use("/inventory", errorRoute);
 app.use(express.static("public"))
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 /* ***********************
  * View Engine and Templates
  *************************/
+
+/* ***********************
+ * Middleware
+ * ************************/
+app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    createTableIfMissing: true,
+    pool,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  name: 'sessionId',
+}))
+
+// Express Messages Middleware
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
+})
 
 app.set("view engine", "ejs")
 app.use(expressLayouts)
@@ -68,3 +92,5 @@ const host = process.env.HOST
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
+app.use('/', inventoryRoutes);
+app.get('/favicon.ico', (req, res) => res.status(204)); // No Content

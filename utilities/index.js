@@ -18,10 +18,10 @@ async function getNav() {
         </li>`
     })
     navList += `</ul>`
-    return navList
+    return navList; // Was "generatedNav", now corrected to "navList"
   } catch (error) {
-    console.error("Error building nav:", error)
-    return `<ul><li><a href="/" title="Home page">Home</a></li></ul>`
+    console.error('❌ Error loading nav:', error);
+    return '<nav><ul><li>Error loading nav</li></ul></nav>';
   }
 }
 

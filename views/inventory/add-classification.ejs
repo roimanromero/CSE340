@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Classification</title>
+  <script>
+    // Client-side validation: Allow only letters and numbers (no spaces or special characters)
+    function validateForm() {
+      const classificationName = document.getElementById('classificationName').value;
+      const regex = /^[A-Za-z0-9]+$/;
+      if (!regex.test(classificationName)) {
+        alert("Classification name must only contain letters and numbers (no spaces or special characters).");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main>
+    <h1>Add New Classification</h1>
+
+    <!-- Display flash message if available -->
+    <% if (message) { %>
+      <div class="flash-message"><%= message %></div>
+    <% } %>
+    <!-- Display server-side error message if available -->
+    <% if (error) { %>
+      <div class="error-message"><%= error %></div>
+    <% } %>
+
+    <form action="/inv/add-classification" method="POST" onsubmit="return validateForm()">
+      <label for="classificationName">Classification Name:</label>
+      <input type="text" id="classificationName" name="classificationName" 
+             pattern="^[A-Za-z0-9]+$" required>
+      <button type="submit">Add Classification</button>
+    </form>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>
