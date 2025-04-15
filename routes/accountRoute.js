@@ -13,6 +13,12 @@ router.post(
   regValidate.checkLoginData,
   utilities.handleErrors(accountController.accountLogin)
 );
+// Route to serve the account management page
+router.get(
+  "/",
+  utilities.checkLogin, // Middleware to ensure the user is authenticated
+  utilities.handleErrors(accountController.buildAccountManagement)
+);
 
 // Optional: route to serve the login page (e.g., GET request)
 // router.get('/login', accountController.buildLogin);

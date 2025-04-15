@@ -102,31 +102,35 @@ async function buildClassificationList(classification_id = null) {
 }
 
 /* ****************************************
-* Middleware to check token validity
-**************************************** */
-Util.checkJWTToken = (req, res, next) => {
-  if (req.cookies.jwt) {
-   jwt.verify(
-    req.cookies.jwt,
-    process.env.ACCESS_TOKEN_SECRET,
-    function (err, accountData) {
-     if (err) {
-      req.flash("Please log in")
-      res.clearCookie("jwt")
-      return res.redirect("/account/login")
-     }
-     res.locals.accountData = accountData
-     res.locals.loggedin = 1
-     next()
-    })
-  } else {
-   next()
+ * Middleware to check token validity
+ **************************************** */
+function checkLogin(req, res, next) {
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    req.flash("notice", "Please log in.");
+    return res.redirect("/account/login");
   }
- }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, accountData) => {
+    if (err) {
+      res.clearCookie("jwt");
+      req.flash("notice", "Session expired. Please log in again.");
+      return res.redirect("/account/login");
+    }
+
+    res.locals.accountData = accountData;
+    res.locals.loggedin = true;
+    next();
+  });
+}
+
+
 
 module.exports = {
   getNav,
   buildVehicleDetailHtml,
   buildClassificationGrid,
-  buildClassificationList // ✅ export it!
-}
+  buildClassificationList,
+  checkLogin, // ✅ export the middleware
+};

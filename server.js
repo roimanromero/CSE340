@@ -20,7 +20,7 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser())
-app.use(utilities.checkJWTToken) // ✅ Middleware to check JWT token validity
+app.use(utilities.checkLogin) // ✅ Middleware to check JWT token validity
 app.use(expressLayouts);
 
 // Session config
