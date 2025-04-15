@@ -4,9 +4,18 @@ const express = require('express');
 const router = express.Router();
 const utilities = require('../utilities');
 const accountController = require('../controllers/accountController');
+const regValidate = require('../utilities/account-validation'); // <-- Import validation middleware
 
-// Route to serve the login page
-router.get('/login', accountController.buildLogin);
+// Route to handle login form submission
+router.post(
+  "/login",
+  regValidate.loginRules(),
+  regValidate.checkLoginData,
+  utilities.handleErrors(accountController.accountLogin)
+);
+
+// Optional: route to serve the login page (e.g., GET request)
+// router.get('/login', accountController.buildLogin);
 
 // Optional: route to serve registration page (to be implemented later)
 // router.get('/register', accountController.buildRegister);

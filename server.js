@@ -1,3 +1,4 @@
+const cookieParser = require("cookie-parser")
 const session = require("express-session");
 const pool = require("./database/");
 const express = require("express");
@@ -18,6 +19,9 @@ const HOST = process.env.HOST || "localhost";
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser())
+app.use(utilities.checkJWTToken) // ✅ Middleware to check JWT token validity
+app.use(expressLayouts);
 
 // Session config
 app.use(session({
