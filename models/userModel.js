@@ -1,4 +1,4 @@
-const db = require('../database/db-sql-code.sql'); // Adjust the path as needed
+const db = require("../database");  // Importing the database connection
 
 async function createUser(username, email, passwordHash) {
   const result = await db.query(

@@ -3,7 +3,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
-const accountModel = require("../models/accountModel");
+const accountModel = require("../models/accountmodel");
 const utilities = require("../utilities");
 
 /* ****************************************

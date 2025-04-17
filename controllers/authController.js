@@ -1,17 +1,19 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { createUser, findUserByEmail } = require('../models/userModel');
+require('dotenv').config();
 
 // Show login form
 function showLogin(req, res) {
   res.render('auth/login', {
-    title: 'Login'
+    title: 'Login',
   });
 }
 
 // Show registration form
 function showRegister(req, res) {
   res.render('auth/register', {
-    title: 'Register'
+    title: 'Register',
   });
 }
 
@@ -31,9 +33,25 @@ async function loginUser(req, res) {
     return res.redirect('/auth/login');
   }
 
-  req.session.userId = user.user_id;
+  // Create JWT Token
+  const payload = {
+    userId: user.user_id,
+    email: user.email,
+    accountType: user.account_type,  // Adding account type to the token
+  };
+
+  const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+
+  // Store token in a cookie (make sure this cookie is set correctly on the frontend)
+  const cookieOptions = {
+    httpOnly: true,
+    maxAge: 3600000,  // 1 hour in milliseconds
+    secure: process.env.NODE_ENV !== 'development',
+  };
+
+  res.cookie('jwt', token, cookieOptions);
   req.flash('success_msg', 'You are now logged in!');
-  res.redirect('/dashboard'); // Change this if needed
+  res.redirect('/dashboard'); // Update redirect based on your desired landing page
 }
 
 // Handle registration
@@ -48,21 +66,33 @@ async function registerUser(req, res) {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const newUser = await createUser(username, email, passwordHash);
-  req.session.userId = newUser.user_id;
+  
+  // Create JWT Token
+  const payload = {
+    userId: newUser.user_id,
+    email: newUser.email,
+    accountType: newUser.account_type,  // Including account type for later use
+  };
+
+  const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+
+  // Store token in a cookie
+  const cookieOptions = {
+    httpOnly: true,
+    maxAge: 3600000,  // 1 hour in milliseconds
+    secure: process.env.NODE_ENV !== 'development',
+  };
+
+  res.cookie('jwt', token, cookieOptions);
   req.flash('success_msg', 'Registration successful. Welcome!');
-  res.redirect('/dashboard');
+  res.redirect('/dashboard'); // Update redirect based on your desired landing page
 }
 
 // Handle logout
 function logoutUser(req, res) {
-  req.session.destroy(err => {
-    if (err) {
-      req.flash('error_msg', 'Error logging out.');
-      return res.redirect('/dashboard');
-    }
-    res.clearCookie('sessionId');
-    res.redirect('/auth/login');
-  });
+  res.clearCookie('jwt');  // Clear JWT cookie on logout
+  req.flash('success_msg', 'You have been logged out.');
+  res.redirect('/auth/login');
 }
 
 module.exports = {
@@ -70,5 +100,5 @@ module.exports = {
   showRegister,
   loginUser,
   registerUser,
-  logoutUser
+  logoutUser,
 };
