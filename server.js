@@ -6,11 +6,12 @@ const cookieParser = require("cookie-parser");
 const pgSession = require("connect-pg-simple")(session);
 const pool = require("./database/");
 const utilities = require("./utilities/");
-const static = require("./routes/static");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const authRoutes = require("./routes/authRoutes");
+const accountRoute = require("./routes/accountRoute");
 const baseController = require("./controllers/baseController");
 const errorRoute = require("./routes/errorRoute");
+
 
 require("dotenv").config();
 
@@ -21,17 +22,17 @@ const HOST = process.env.HOST || "localhost";
 
 // --- Middleware Setup ---
 
-// Static files
+console.log("Registering static file middleware...");
 app.use(express.static("public"));
 
-// Body parsing
+console.log("Registering body parser middleware...");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Cookies
+console.log("Registering cookie parser middleware...");
 app.use(cookieParser());
 
-// Session setup
+console.log("Registering session middleware...");
 app.use(session({
   store: new pgSession({
     pool,
@@ -40,47 +41,44 @@ app.use(session({
   secret: process.env.SESSION_SECRET || "defaultSecret",
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }, // Set to true if using HTTPS
+  cookie: { secure: false },
   name: 'sessionId',
 }));
 
-// Flash messages
+console.log("Registering flash middleware...");
 app.use(flash());
 
+console.log("Registering flash message locals middleware...");
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error'); // optional, like login error
+  res.locals.error = req.flash('error');
   next();
 });
 
+console.log("Registering navigation injection middleware...");
+app.use(utilities.injectNav); // 🔥 double check this function exists and is exported
 
-// Make flash messages available to all views
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error'); // Optional: for passport-style errors
-  next();
-});
+// app.use(utilities.checkLogin); // Optional
 
-// JWT check middleware
-
-
-// Inject nav into all views
-app.use(utilities.injectNav); 
-//app.use(utilities.checkLogin);
-
-// View engine
+console.log("Setting up EJS view engine...");
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout");
 
 // --- Routes ---
-app.use("/", static);
+console.log("Registering /auth routes...");
 app.use("/auth", authRoutes);
-app.use("/inv", inventoryRoutes);
-app.use("/inventory", errorRoute);
 
+console.log("Registering /inv (inventory) routes...");
+app.use("/inv", inventoryRoutes);
+
+app.use("/account", accountRoute);
+
+console.log("Registering /errors (error testing) routes...");
+app.use("/errors", errorRoute);
+
+console.log("Registering home route...");
 app.get("/", baseController.buildHome);
 
 // Favicon fix
@@ -93,7 +91,7 @@ app.use(async (req, res, next) => {
 
 // Global Error Handler
 app.use(async (err, req, res, next) => {
-  const nav = await utilities.getNav();
+  const nav = await utilities.getNav?.() || [];
   console.error(`Error at "${req.originalUrl}": ${err.message}`);
   res.status(err.status || 500).render("errors/error", {
     title: "Server Error",
@@ -105,5 +103,5 @@ app.use(async (err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`App listening on http://${HOST}:${PORT}`);
+  console.log(`✅ App listening on http://${HOST}:${PORT}`);
 });

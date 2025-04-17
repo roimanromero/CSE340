@@ -139,12 +139,35 @@ function checkEmployeeOrAdmin(req, res, next) {
   next();
 }
 
+async function injectNav(req, res, next) {
+  try {
+    const nav = await getNav();
+    res.locals.nav = nav;
+    next();
+  } catch (error) {
+    console.error("❌ Failed to inject navigation:", error);
+    next(error);
+  }
+}
+
+/**
+ * Wraps async route controllers to catch and pass errors to Express
+ */
+function handleErrors(fn) {
+  return function (req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
+
 module.exports = {
   getNav,
+  injectNav,
   buildVehicleDetailHtml,
   buildClassificationGrid,
   buildClassificationList,
   checkLogin,
   checkAdmin,
   checkEmployeeOrAdmin,
+  handleErrors,
 };

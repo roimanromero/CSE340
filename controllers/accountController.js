@@ -71,6 +71,14 @@ async function accountLogin(req, res) {
   }
 }
 
+// Show register page
+async function buildRegister(req, res) {
+  res.render("account/register", {
+    title: "Register",
+    errors: null,
+  });
+}
+
 /* Account Management View */
 async function buildAccountManagement(req, res) {
   const nav = await utilities.getNav();
@@ -165,6 +173,7 @@ function logout(req, res) {
 module.exports = {
   buildLogin,
   accountLogin,
+  buildRegister,
   buildAccountManagement,
   buildUpdateView,
   updateAccount,
