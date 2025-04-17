@@ -1,13 +1,16 @@
-const jwt = require("jsonwebtoken")
-require("dotenv").config()
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const invModel = require("../models/inventory-model")
+const invModel = require("../models/inventory-model");
 
+/* ****************************************
+ * Build the navigation HTML
+ **************************************** */
 async function getNav() {
   try {
-    const data = await invModel.getClassifications()
-    let navList = `<ul>`
-    navList += `<li><a href="/" title="Home page">Home</a></li>`
+    const data = await invModel.getClassifications();
+    let navList = `<ul>`;
+    navList += `<li><a href="/" title="Home page">Home</a></li>`;
     data.forEach(({ classification_id, classification_name }) => {
       navList += `
         <li>
@@ -15,23 +18,40 @@ async function getNav() {
              title="See our inventory of ${classification_name} vehicles">
             ${classification_name}
           </a>
-        </li>`
-    })
-    navList += `</ul>`
-    return navList
+        </li>`;
+    });
+    navList += `</ul>`;
+    return navList;
   } catch (error) {
-    console.error('❌ Error loading nav:', error)
-    return '<nav><ul><li>Error loading nav</li></ul></nav>'
+    console.error('❌ Error loading nav:', error);
+    return '<nav><ul><li>Error loading nav</li></ul></nav>';
   }
 }
 
+/* ****************************************
+ * Inject nav middleware for all views
+ **************************************** */
+async function injectNav(req, res, next) {
+  try {
+    res.locals.nav = await getNav();
+    next();
+  } catch (err) {
+    console.error("❌ Failed to inject nav:", err);
+    res.locals.nav = '';
+    next();
+  }
+}
+
+/* ****************************************
+ * Vehicle detail page formatter
+ **************************************** */
 function buildVehicleDetailHtml(vehicle) {
   const priceFormatted = Number(vehicle.inv_price).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
-  })
+  });
 
-  const milesFormatted = Number(vehicle.inv_miles).toLocaleString("en-US")
+  const milesFormatted = Number(vehicle.inv_miles).toLocaleString("en-US");
 
   return `
     <div class="vehicle-detail-container">
@@ -47,20 +67,23 @@ function buildVehicleDetailHtml(vehicle) {
         <p><strong>Miles:</strong> ${milesFormatted} miles</p>
       </div>
     </div>
-  `
+  `;
 }
 
+/* ****************************************
+ * Build inventory grid
+ **************************************** */
 function buildClassificationGrid(data) {
   if (!data?.length) {
-    return `<p class="notice">Sorry, no vehicles matched your search.</p>`
+    return `<p class="notice">Sorry, no vehicles matched your search.</p>`;
   }
 
-  let grid = '<section class="vehicle-grid">'
+  let grid = '<section class="vehicle-grid">';
   data.forEach(vehicle => {
     const formattedPrice = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(vehicle.inv_price)
+    }).format(vehicle.inv_price);
 
     grid += `
       <div class="vehicle-card">
@@ -78,27 +101,29 @@ function buildClassificationGrid(data) {
           <span>${formattedPrice}</span>
         </div>
       </div>
-    `
-  })
-  grid += '</section>'
-  return grid
+    `;
+  });
+  grid += '</section>';
+  return grid;
 }
 
-// ✅ FIX: Add this missing utility function
+/* ****************************************
+ * Classification dropdown builder
+ **************************************** */
 async function buildClassificationList(classification_id = null) {
-  let data = await invModel.getClassifications()
+  const data = await invModel.getClassifications();
   let classificationList =
-    '<select name="classification_id" id="classificationList" required>'
-  classificationList += "<option value=''>Choose a Classification</option>"
+    '<select name="classification_id" id="classificationList" required>';
+  classificationList += "<option value=''>Choose a Classification</option>";
   data.forEach((row) => {
-    classificationList += `<option value="${row.classification_id}"`
+    classificationList += `<option value="${row.classification_id}"`;
     if (classification_id != null && row.classification_id == classification_id) {
-      classificationList += " selected"
+      classificationList += " selected";
     }
-    classificationList += `>${row.classification_name}</option>`
-  })
-  classificationList += "</select>"
-  return classificationList
+    classificationList += `>${row.classification_name}</option>`;
+  });
+  classificationList += "</select>";
+  return classificationList;
 }
 
 /* ****************************************
@@ -109,14 +134,14 @@ function checkLogin(req, res, next) {
 
   if (!token) {
     req.flash("notice", "Please log in.");
-    return res.redirect("/account/login");
+    return res.redirect("/auth/login");
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, accountData) => {
     if (err) {
       res.clearCookie("jwt");
       req.flash("notice", "Session expired. Please log in again.");
-      return res.redirect("/account/login");
+      return res.redirect("/auth/login");
     }
 
     res.locals.accountData = accountData;
@@ -125,12 +150,14 @@ function checkLogin(req, res, next) {
   });
 }
 
-
-
+/* ****************************************
+ * Module Exports
+ **************************************** */
 module.exports = {
   getNav,
+  injectNav,
   buildVehicleDetailHtml,
   buildClassificationGrid,
   buildClassificationList,
-  checkLogin, // ✅ export the middleware
+  checkLogin,
 };

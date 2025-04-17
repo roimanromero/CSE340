@@ -7,7 +7,18 @@
     <%- include("../partials/header") %>
     <%- include("../partials/navigation") %>
     <main>
-      <%- messages() %>
+      <% if (success_msg) { %>
+        <div class="flash success"><%= success_msg %></div>
+      <% } %>
+      
+      <% if (error_msg) { %>
+        <div class="flash error"><%= error_msg %></div>
+      <% } %>
+      
+      <% if (error) { %>
+        <div class="flash error"><%= error %></div>
+      <% } %>
+      
       <%- include("../partials/index") %>  
     <%- body %>
     </main>

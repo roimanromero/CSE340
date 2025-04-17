@@ -1,66 +1,94 @@
-const cookieParser = require("cookie-parser")
-const session = require("express-session");
-const pool = require("./database/");
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
+const session = require("express-session");
+const flash = require("connect-flash");
+const cookieParser = require("cookie-parser");
+const pgSession = require("connect-pg-simple")(session);
+const pool = require("./database/");
+const utilities = require("./utilities/");
+const static = require("./routes/static");
+const inventoryRoutes = require("./routes/inventoryRoutes");
+const authRoutes = require("./routes/authRoutes");
+const baseController = require("./controllers/baseController");
+const errorRoute = require("./routes/errorRoute");
+
 require("dotenv").config();
 
 const app = express();
-const utilities = require("./utilities/");
-const static = require("./routes/static");
-const inventoryRoutes = require("./routes/inventoryRoutes"); // ✅ Corrected and unified
-const baseController = require("./controllers/baseController");
-const errorRoute = require("./routes/errorRoute");
 
 const PORT = process.env.PORT || 5500;
 const HOST = process.env.HOST || "localhost";
 
-// Middleware
+// --- Middleware Setup ---
+
+// Static files
 app.use(express.static("public"));
+
+// Body parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser())
-app.use(utilities.checkLogin) // ✅ Middleware to check JWT token validity
-app.use(expressLayouts);
 
-// Session config
+// Cookies
+app.use(cookieParser());
+
+// Session setup
 app.use(session({
-  store: new (require('connect-pg-simple')(session))({
-    createTableIfMissing: true,
+  store: new pgSession({
     pool,
+    createTableIfMissing: true,
   }),
-  secret: process.env.SESSION_SECRET || 'defaultSecret',
-  resave: true,
-  saveUninitialized: true,
+  secret: process.env.SESSION_SECRET || "defaultSecret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }, // Set to true if using HTTPS
   name: 'sessionId',
 }));
 
 // Flash messages
-app.use(require('connect-flash')());
+app.use(flash());
+
 app.use((req, res, next) => {
-  res.locals.messages = require('express-messages')(req, res);
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error'); // optional, like login error
   next();
 });
+
+
+// Make flash messages available to all views
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error'); // Optional: for passport-style errors
+  next();
+});
+
+// JWT check middleware
+
+
+// Inject nav into all views
+app.use(utilities.injectNav); 
+//app.use(utilities.checkLogin);
 
 // View engine
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout");
 
-// Routes
+// --- Routes ---
 app.use("/", static);
-app.get("/", baseController.buildHome);
-app.use("/inv", inventoryRoutes); // ✅ Route is now clearly scoped
-
-// Error routes
+app.use("/auth", authRoutes);
+app.use("/inv", inventoryRoutes);
 app.use("/inventory", errorRoute);
 
+app.get("/", baseController.buildHome);
+
 // Favicon fix
-app.get('/favicon.ico', (req, res) => res.status(204));
+app.get("/favicon.ico", (req, res) => res.status(204));
 
 // 404 Handler
 app.use(async (req, res, next) => {
-  next({ status: 404, message: 'Sorry, we appear to have lost that page.' });
+  next({ status: 404, message: "Sorry, we appear to have lost that page." });
 });
 
 // Global Error Handler

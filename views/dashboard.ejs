@@ -1,0 +1,11 @@
+<%- include('partials/header') %>
+
+<h1>Welcome to your dashboard!</h1>
+
+<p>You are now logged in.</p>
+
+<form action="/auth/logout" method="POST">
+  <button type="submit">Logout</button>
+</form>
+
+<%- include('partials/footer') %>
