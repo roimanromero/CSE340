@@ -1,0 +1,26 @@
+<h1>Update Account</h1>
+<%- include('../partials/messages') %>
+
+<h2>Account Update</h2>
+<form method="POST" action="/account/update">
+  <input type="hidden" name="account_id" value="<%= accountData.account_id %>" />
+  <label for="firstname">First Name</label>
+  <input type="text" name="firstname" id="firstname" required value="<%= accountData.firstname %>" />
+  
+  <label for="lastname">Last Name</label>
+  <input type="text" name="lastname" id="lastname" required value="<%= accountData.lastname %>" />
+
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" required value="<%= accountData.email %>" />
+  
+  <input type="submit" value="Update Account Info" />
+</form>
+
+<h2>Change Password</h2>
+<form method="POST" action="/account/update-password">
+  <input type="hidden" name="account_id" value="<%= accountData.account_id %>" />
+  <label for="password">New Password</label>
+  <input type="password" name="password" id="password" required />
+  <p>Password must be at least 12 characters with a number and special character.</p>
+  <input type="submit" value="Change Password" />
+</form>

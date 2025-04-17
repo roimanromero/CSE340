@@ -57,6 +57,24 @@ async function updateAccount(account_firstname, account_lastname, account_email,
   }
 }
 
+async function getAccountById(account_id) {
+  const data = await pool.query(`SELECT * FROM account WHERE account_id = $1`, [account_id])
+  return data.rows[0]
+}
+
+async function updateAccount(firstname, lastname, email, account_id) {
+  const sql = `UPDATE account SET firstname = $1, lastname = $2, email = $3 WHERE account_id = $4 RETURNING *`
+  const data = await pool.query(sql, [firstname, lastname, email, account_id])
+  return data.rowCount
+}
+
+async function updatePassword(password, account_id) {
+  const sql = `UPDATE account SET password = $1 WHERE account_id = $2 RETURNING *`
+  const data = await pool.query(sql, [password, account_id])
+  return data.rowCount
+}
+
+
 /* ********************************************
  * Update account password (hashed)
  * ******************************************** */

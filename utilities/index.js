@@ -1,11 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
 const invModel = require("../models/inventory-model");
 
-/* ****************************************
- * Build the navigation HTML
- **************************************** */
 async function getNav() {
   try {
     const data = await invModel.getClassifications();
@@ -28,23 +24,6 @@ async function getNav() {
   }
 }
 
-/* ****************************************
- * Inject nav middleware for all views
- **************************************** */
-async function injectNav(req, res, next) {
-  try {
-    res.locals.nav = await getNav();
-    next();
-  } catch (err) {
-    console.error("❌ Failed to inject nav:", err);
-    res.locals.nav = '';
-    next();
-  }
-}
-
-/* ****************************************
- * Vehicle detail page formatter
- **************************************** */
 function buildVehicleDetailHtml(vehicle) {
   const priceFormatted = Number(vehicle.inv_price).toLocaleString("en-US", {
     style: "currency",
@@ -70,9 +49,6 @@ function buildVehicleDetailHtml(vehicle) {
   `;
 }
 
-/* ****************************************
- * Build inventory grid
- **************************************** */
 function buildClassificationGrid(data) {
   if (!data?.length) {
     return `<p class="notice">Sorry, no vehicles matched your search.</p>`;
@@ -107,11 +83,9 @@ function buildClassificationGrid(data) {
   return grid;
 }
 
-/* ****************************************
- * Classification dropdown builder
- **************************************** */
+// ✅ FIX: Add this missing utility function
 async function buildClassificationList(classification_id = null) {
-  const data = await invModel.getClassifications();
+  let data = await invModel.getClassifications();
   let classificationList =
     '<select name="classification_id" id="classificationList" required>';
   classificationList += "<option value=''>Choose a Classification</option>";
@@ -134,30 +108,43 @@ function checkLogin(req, res, next) {
 
   if (!token) {
     req.flash("notice", "Please log in.");
-    return res.redirect("/auth/login");
+    return res.redirect("/account/login");
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, accountData) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
-      res.clearCookie("jwt");
       req.flash("notice", "Session expired. Please log in again.");
-      return res.redirect("/auth/login");
+      return res.redirect("/account/login");
     }
-
-    res.locals.accountData = accountData;
-    res.locals.loggedin = true;
+    res.locals.accountData = user;
     next();
   });
 }
 
-/* ****************************************
- * Module Exports
- **************************************** */
+function checkAdmin(req, res, next) {
+  const { role } = res.locals.accountData;
+  if (role !== "admin") {
+    req.flash("notice", "You must be an admin to view this page.");
+    return res.redirect("/");
+  }
+  next();
+}
+
+function checkEmployeeOrAdmin(req, res, next) {
+  const { role } = res.locals.accountData;
+  if (role !== "admin" && role !== "employee") {
+    req.flash("notice", "You must be an employee or admin to view this page.");
+    return res.redirect("/");
+  }
+  next();
+}
+
 module.exports = {
   getNav,
-  injectNav,
   buildVehicleDetailHtml,
   buildClassificationGrid,
   buildClassificationList,
   checkLogin,
+  checkAdmin,
+  checkEmployeeOrAdmin,
 };
