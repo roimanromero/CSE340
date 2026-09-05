@@ -1,107 +1,51 @@
-const express = require("express");
-const expressLayouts = require("express-ejs-layouts");
-const session = require("express-session");
-const flash = require("connect-flash");
-const cookieParser = require("cookie-parser");
-const pgSession = require("connect-pg-simple")(session);
-const pool = require("./database/");
-const utilities = require("./utilities/");
-const inventoryRoutes = require("./routes/inventoryRoutes");
-const authRoutes = require("./routes/authRoutes");
-const accountRoute = require("./routes/accountRoute");
-const baseController = require("./controllers/baseController");
-const errorRoute = require("./routes/errorRoute");
+import express from 'express';
+import { fileURLToPath } from 'url';
+import path from 'path';
+// Define the application environment
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 
-
-require("dotenv").config();
+// Define the port number the server will listen on
+const PORT = process.env.PORT || 3000
 
 const app = express();
 
-const PORT = process.env.PORT || 5500;
-const HOST = process.env.HOST || "localhost";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// --- Middleware Setup ---
 
-console.log("Registering static file middleware...");
-app.use(express.static("public"));
+/**
+  * Configure Express middleware
+  */
 
-console.log("Registering body parser middleware...");
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+// Set EJS as the templating engine
+app.set('view engine', 'ejs');
 
-console.log("Registering cookie parser middleware...");
-app.use(cookieParser());
-
-console.log("Registering session middleware...");
-app.use(session({
-  store: new pgSession({
-    pool,
-    createTableIfMissing: true,
-  }),
-  secret: process.env.SESSION_SECRET || "defaultSecret",
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false },
-  name: 'sessionId',
-}));
-
-console.log("Registering flash middleware...");
-app.use(flash());
-
-console.log("Registering flash message locals middleware...");
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  next();
+// Tell Express where to find your templates
+app.set('views', path.join(__dirname, 'src/views'));
+/**
+  * Routes
+  */
+/**
+ * Routes
+ */
+app.get('/', async (req, res) => {
+    const title = 'Home';
+    res.render('home', { title });
 });
 
-console.log("Registering navigation injection middleware...");
-app.use(utilities.injectNav); // 🔥 double check this function exists and is exported
-
-// app.use(utilities.checkLogin); // Optional
-
-console.log("Setting up EJS view engine...");
-app.set("view engine", "ejs");
-app.use(expressLayouts);
-app.set("layout", "./layouts/layout");
-
-// --- Routes ---
-console.log("Registering /auth routes...");
-app.use("/auth", authRoutes);
-
-console.log("Registering /inv (inventory) routes...");
-app.use("/inv", inventoryRoutes);
-
-app.use("/account", accountRoute);
-
-console.log("Registering /errors (error testing) routes...");
-app.use("/errors", errorRoute);
-
-console.log("Registering home route...");
-app.get("/", baseController.buildHome);
-
-// Favicon fix
-app.get("/favicon.ico", (req, res) => res.status(204));
-
-// 404 Handler
-app.use(async (req, res, next) => {
-  next({ status: 404, message: "Sorry, we appear to have lost that page." });
+app.get('/organizations', async (req, res) => {
+    const title = 'Our Partner Organizations';
+    res.render('organizations', { title });
 });
 
-// Global Error Handler
-app.use(async (err, req, res, next) => {
-  const nav = await utilities.getNav?.() || [];
-  console.error(`Error at "${req.originalUrl}": ${err.message}`);
-  res.status(err.status || 500).render("errors/error", {
-    title: "Server Error",
-    message: err.message,
-    status: err.status || 500,
-    nav
-  });
+app.get('/projects', async (req, res) => {
+    const title = 'Service Projects';
+    res.render('projects', { title });
 });
 
-// Start server
 app.listen(PORT, () => {
-  console.log(`✅ App listening on http://${HOST}:${PORT}`);
+  console.log(`Server is running at http://127.0.0.1:${PORT}`);
+  console.log(`Environment: ${NODE_ENV}`);
 });
