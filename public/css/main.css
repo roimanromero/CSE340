@@ -1,30 +1,253 @@
-html, body {
-    background-color: lightblue;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
+/* ==========================================================================
+   1. Design Tokens & CSS Variables
+   ========================================================================== */
+:root {
+    --primary-color: #0d47a1;     /* Deep navy blue for accessible dark contrast */
+    --accent-color: #00897b;      /* Vibrant teal for eye-catching hovers */
+    --bg-color: #f4f7f6;          /* Clean off-white background */
+    --card-bg: #ffffff;           /* White card background */
+    --text-primary: #1a1a1a;     /* Dark charcoal for high contrast body text */
+    --text-muted: #555555;       /* Medium grey for secondary details */
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
 }
 
+/* ==========================================================================
+   2. Base & Global Resets
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   3. Page Layout Container
+   ========================================================================== */
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 1rem;
+
+    /* Primary Navigation */
     nav {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+
         ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
         }
 
         li {
-            display: inline;
-            margin-right: 15px;
+            display: inline-block;
         }
 
         a {
             text-decoration: none;
-            color: #333;
-            font-weight: bold;
+            color: var(--primary-color);
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            position: relative;
+            transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease;
 
-            &:hover {
-                color: #0066cc;
+            /* Interactive underline hover effect */
+            &::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 3px;
+                bottom: 0;
+                left: 50%;
+                background-color: var(--accent-color);
+                transition: all var(--transition-speed) ease;
+                transform: translateX(-50%);
+            }
+
+            &:hover,
+            &:focus-visible {
+                color: var(--accent-color);
+                background-color: rgba(0, 137, 123, 0.08);
+                outline: none;
+
+                &::after {
+                    width: 80%;
+                }
             }
         }
     }
-}                
+
+    /* Main Content Area */
+    main {
+        flex: 1;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        background-color: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+        h1 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 2.25rem;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .main-logo {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 2rem auto 0;
+            border-radius: var(--border-radius);
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+
+            &:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        /* Organizations List Styles */
+        .org-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+
+            .org-card {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+                background-color: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: var(--border-radius);
+                padding: 1.25rem 1.5rem;
+                transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+
+                &:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+                }
+
+                .org-logo {
+                    width: 90px;
+                    height: 90px;
+                    object-fit: contain; /* Previene distorsión del logo */
+                    border-radius: 6px;
+                    background-color: #f8fafc;
+                    padding: 0.5rem;
+                    border: 1px solid #f1f5f9;
+                    flex-shrink: 0; /* Previene que el logo se aplaste */
+                }
+
+                .org-info {
+                    flex: 1;
+
+                    h2 {
+                        margin: 0 0 0.35rem 0;
+                        font-size: 1.25rem;
+                        color: var(--primary-color);
+                    }
+
+                    .org-email {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        color: var(--text-muted);
+
+                        a {
+                            color: var(--primary-color);
+                            text-decoration: underline;
+                            font-weight: 600;
+
+                            &:hover {
+                                color: var(--accent-color);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* Footer Section */
+    footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1.5rem 0;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        border-top: 1px solid #e0e0e0;
+    }
+}
+
+/* ==========================================================================
+   4. Responsive Adjustments (Media Queries)
+   ========================================================================== */
+@media (max-width: 600px) {
+    body {
+        padding: 0.5rem;
+
+        nav ul {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        main {
+            padding: 1.5rem;
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .org-list .org-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+
+                .org-logo {
+                    width: 80px;
+                    height: 80px;
+                }
+            }
+        }
+    }
+}
