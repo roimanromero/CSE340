@@ -47,3 +47,68 @@ VALUES
 (3, 'Neighborhood Cleanup Drive', 'Collecting litter and tidying up public spaces.', 'Eastside District', '2026-05-30');
 
 SELECT * FROM projects;
+
+SELECT 
+    p.project_id, 
+    p.title, 
+    p.date, 
+    o.name AS organization_name
+FROM projects p
+JOIN organizations o ON p.organization_id = o.organization_id;
+
+-- ========================================
+-- Create table: Categories
+-- ========================================
+CREATE TABLE IF NOT EXISTS categories (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- ========================================
+-- Create junction table: Project Categories (Many-to-Many)
+-- ========================================
+CREATE TABLE IF NOT EXISTS project_categories (
+    project_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (project_id, category_id),
+    CONSTRAINT fk_project
+        FOREIGN KEY (project_id) 
+        REFERENCES projects(project_id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_category
+        FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id)
+        ON DELETE CASCADE
+);
+
+-- ========================================
+-- Insert sample data: Categories
+-- ========================================
+INSERT INTO categories (name)
+VALUES
+('Environmental'),
+('Educational'),
+('Community Service'),
+('Health and Wellness');
+
+-- ========================================
+-- Associate Projects with Categories
+-- ========================================
+-- Linking sample projects to categories based on their IDs
+INSERT INTO project_categories (project_id, category_id)
+VALUES
+(1, 3), (1, 1), -- Project 1 linked to Community Service and Environmental
+(2, 1),         -- Project 2 linked to Environmental
+(3, 2),         -- Project 3 linked to Educational
+(4, 3),         -- Project 4 linked to Community Service
+(5, 3),         -- Project 5 linked to Community Service
+(6, 1),         -- Project 6 linked to Environmental
+(7, 2),         -- Project 7 linked to Educational
+(8, 2),         -- Project 8 linked to Educational
+(9, 1),         -- Project 9 linked to Environmental
+(10, 3),        -- Project 10 linked to Community Service
+(11, 4),        -- Project 11 linked to Health and Wellness
+(12, 3),        -- Project 12 linked to Community Service
+(13, 2),        -- Project 13 linked to Educational
+(14, 4),        -- Project 14 linked to Health and Wellness
+(15, 1);        -- Project 15 linked to Environmental
