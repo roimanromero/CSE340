@@ -19,23 +19,81 @@ const getAllProjects = async () => {
 };
 
 const getProjectsByOrganizationId = async (organizationId) => {
-      const query = `
+    const query = `
         SELECT
-          project_id,
-          organization_id,
-          title,
-          description,
-          location,
-          date
-        FROM projects
+            project_id,
+            organization_id,
+            title,
+            description,
+            location,
+            date
+        FROM public.projects
         WHERE organization_id = $1
         ORDER BY date;
-      `;
+    `;
       
-      const queryParams = [organizationId];
-      const result = await db.query(query, queryParams);
+    const queryParams = [organizationId];
+    const result = await db.query(query, queryParams);
 
-      return result.rows;
+    return result.rows;
 };
 
-export { getAllProjects, getProjectsByOrganizationId };
+/**
+ * Obtiene los próximos proyectos cuya fecha sea mayor o igual a la fecha actual.
+ * @param {number} number_of_projects - Cantidad máxima de proyectos a retornar.
+ */
+const getUpcomingProjects = async (number_of_projects) => {
+    const query = `
+        SELECT 
+            p.project_id, 
+            p.title, 
+            p.description, 
+            p.date, 
+            p.location, 
+            p.organization_id, 
+            o.name AS organization_name
+        FROM public.projects p
+        JOIN public.organizations o ON p.organization_id = o.organization_id
+        WHERE p.date >= CURRENT_DATE
+        ORDER BY p.date ASC
+        LIMIT $1;
+    `;
+
+    const queryParams = [number_of_projects];
+    const result = await db.query(query, queryParams);
+
+    return result.rows;
+};
+
+/**
+ * Obtiene los detalles de un proyecto específico según su ID.
+ * @param {number|string} id - ID del proyecto.
+ */
+const getProjectDetails = async (id) => {
+    const query = `
+        SELECT 
+            p.project_id, 
+            p.title, 
+            p.description, 
+            p.date, 
+            p.location, 
+            p.organization_id, 
+            o.name AS organization_name
+        FROM public.projects p
+        JOIN public.organizations o ON p.organization_id = o.organization_id
+        WHERE p.project_id = $1;
+    `;
+
+    const queryParams = [id];
+    const result = await db.query(query, queryParams);
+
+    // Retorna el primer objeto si existe, o null si no se encuentra
+    return result.rows.length > 0 ? result.rows[0] : null;
+};
+
+export { 
+    getAllProjects, 
+    getProjectsByOrganizationId, 
+    getUpcomingProjects, 
+    getProjectDetails 
+};
