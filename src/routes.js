@@ -3,7 +3,7 @@ import { showOrganizationDetailsPage } from './controllers/organizations.js';
 import { showHomePage } from './controllers/index.js';
 import { showOrganizationsPage } from './controllers/organizations.js';
 import { showProjectsPage, showProjectDetailsPage } from './controllers/projects.js';
-import { showCategoriesPage } from './controllers/categories.js';
+import { showCategoriesPage, showCategoryDetailsPage } from './controllers/categories.js';
 import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
 
 const router = express.Router();
@@ -22,6 +22,8 @@ router.get('/organization/:id', showOrganizationDetailsPage);
 
 // Route for project details page
 router.get('/project/:id', showProjectDetailsPage);
+
+router.get('/category/:id', showCategoryDetailsPage);
 
 // --- PIPELINE DE ERRORES ---
 // 1. Captura cualquier ruta que no haya coincidido con las anteriores

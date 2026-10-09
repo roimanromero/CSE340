@@ -1,11 +1,11 @@
 import { getUpcomingProjects, getProjectDetails } from '../models/projects.js';
+import { getCategoriesByProjectId } from '../models/categories.js';
 
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
 const showProjectsPage = async (req, res, next) => {
     try {
         const title = 'Upcoming Service Projects';
-        // Reemplazamos getAllProjects() por getUpcomingProjects()
         const projects = await getUpcomingProjects(NUMBER_OF_UPCOMING_PROJECTS);
 
         res.render('projects', { title, projects });
@@ -25,9 +25,11 @@ const showProjectDetailsPage = async (req, res, next) => {
             return next(error);
         }
 
+        // Obtener las categorías asociadas a este proyecto
+        const categories = await getCategoriesByProjectId(projectId);
         const title = project.title;
 
-        res.render('project', { title, project });
+        res.render('project', { title, project, categories });
     } catch (error) {
         next(error);
     }

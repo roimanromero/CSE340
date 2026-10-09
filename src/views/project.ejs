@@ -13,13 +13,24 @@
             </p>
             <p class="mb-1">
                 <strong>Date:</strong> 
-                <%= new Date(project.date).toLocaleDateString() %>
+                <%= new Date(project.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
             </p>
             <p class="mb-1">
                 <strong>Location:</strong> 
                 <%= project.location %>
             </p>
         </div>
+
+        <% if (categories && categories.length > 0) { %>
+            <div class="mb-3">
+                <strong>Categories:</strong>
+                <% categories.forEach(category => { %>
+                    <a href="/category/<%= category.category_id %>" class="badge bg-secondary text-decoration-none me-1">
+                        <%= category.name %>
+                    </a>
+                <% }) %>
+            </div>
+        <% } %>
 
         <div class="project-description mt-4">
             <h2>About this project</h2>
