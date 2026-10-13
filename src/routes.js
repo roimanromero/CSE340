@@ -2,6 +2,7 @@ import express from 'express';
 import { showOrganizationDetailsPage } from './controllers/organizations.js';
 import { showHomePage } from './controllers/index.js';
 import { showOrganizationsPage } from './controllers/organizations.js';
+import { showNewOrganizationForm } from './controllers/organizations.js';
 import { showProjectsPage, showProjectDetailsPage } from './controllers/projects.js';
 import { showCategoriesPage, showCategoryDetailsPage } from './controllers/categories.js';
 import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
@@ -24,7 +25,7 @@ router.get('/organization/:id', showOrganizationDetailsPage);
 router.get('/project/:id', showProjectDetailsPage);
 
 router.get('/category/:id', showCategoryDetailsPage);
-
+router.get('/new-organization', showNewOrganizationForm);
 // --- PIPELINE DE ERRORES ---
 // 1. Captura cualquier ruta que no haya coincidido con las anteriores
 router.use(handle404);
