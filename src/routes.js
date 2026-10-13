@@ -6,7 +6,8 @@ import { showNewOrganizationForm } from './controllers/organizations.js';
 import { showProjectsPage, showProjectDetailsPage } from './controllers/projects.js';
 import { showCategoriesPage, showCategoryDetailsPage } from './controllers/categories.js';
 import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
-
+import { processNewOrganizationForm } from './controllers/organizations.js';
+import { organizationValidation} from './controllers/organizations.js';
 const router = express.Router();
 
 // Rutas principales de la aplicación
@@ -14,6 +15,8 @@ router.get('/', showHomePage);
 router.get('/organizations', showOrganizationsPage);
 router.get('/projects', showProjectsPage);
 router.get('/categories', showCategoriesPage);
+// Route to handle new organization form submission
+router.post('/new-organization', organizationValidation, processNewOrganizationForm);
 
 // Ruta para probar el flujo de errores intencionalmente
 router.get('/test-error', testErrorPage);
