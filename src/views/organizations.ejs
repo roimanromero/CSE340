@@ -2,6 +2,10 @@
 <main>
     <h1><%= title %></h1>
 
+    <% if (user && user.role_name === 'admin') { %>
+        <p><a href="/new-organization" class="btn">Add New Organization</a></p>
+    <% } %>
+
     <p>Here are a few of our partner organizations:</p>
     <ul>
         <% organizations.forEach(organization => { %>
@@ -9,7 +13,4 @@
         <% }); %>
     </ul>
 </main>
-
-<p><a href="/new-organization">Add a new organization</a></p>
-
 <%- include('partials/footer') %>

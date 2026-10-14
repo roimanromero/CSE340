@@ -7,7 +7,6 @@ import router from './src/routes.js';
 import session from 'express-session';
 import flash from './src/middleware/flash.js';
 
-
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 
@@ -23,11 +22,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET;
 
 /**
  * Configure Express middleware
- *
  */
-// Allow Express to receive and process common POST data
-
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -40,10 +35,6 @@ app.set('view engine', 'ejs');
 // Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
 
-
-
-// Middleware to log all incoming requests
-
 // Set up session management
 app.use(session({
     secret: SESSION_SECRET,
@@ -52,19 +43,28 @@ app.use(session({
     cookie: { maxAge: 60 * 60 * 1000 } // Session expires after 1 hour of inactivity
 }));
 
+// Unified middleware to set global res.locals variables (isLoggedIn, user, NODE_ENV)
+app.use((req, res, next) => {
+    res.locals.isLoggedIn = false;
+    res.locals.user = null;
+
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+        res.locals.user = req.session.user; // Makes user data and role_name available in all EJS templates
+    }
+
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
+
 // Use flash message middleware
 app.use(flash);
 
+// Optional request logger in development mode
 app.use((req, res, next) => {
     if (NODE_ENV === 'development') {
         console.log(`${req.method} ${req.url}`);
     }
-    next(); // Pass control to the next middleware or route
-});
-
-// Middleware to make NODE_ENV available to all templates
-app.use((req, res, next) => {
-    res.locals.NODE_ENV = NODE_ENV;
     next();
 });
 

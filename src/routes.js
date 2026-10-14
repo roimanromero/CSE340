@@ -1,6 +1,15 @@
 import express from 'express';
 import { showHomePage } from './controllers/index.js';
-import { showUserRegistrationForm, processUserRegistrationForm } from './controllers/users.js';
+import { 
+    showUserRegistrationForm, 
+    processUserRegistrationForm, 
+    showLoginForm, 
+    processLoginForm, 
+    processLogout, 
+    requireLogin, 
+    showDashboard, 
+    requireRole 
+} from './controllers/users.js';
 import { 
     showOrganizationsPage, 
     showOrganizationDetailsPage, 
@@ -19,10 +28,6 @@ import {
     processEditProjectForm, 
     projectValidation 
 } from './controllers/projects.js';
-
-import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
-
-
 import { 
     showCategoriesPage, 
     showCategoryDetailsPage, 
@@ -32,6 +37,8 @@ import {
     processEditCategoryForm, 
     categoryValidation 
 } from './controllers/categories.js';
+import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
+
 const router = express.Router();
 
 // --- RUTAS PRINCIPALES ---
@@ -43,37 +50,38 @@ router.get('/categories', showCategoriesPage);
 router.get('/register', showUserRegistrationForm);
 router.post('/register', processUserRegistrationForm);
 
-// --- RUTAS DE ORGANIZACIONES ---
-router.get('/new-organization', showNewOrganizationForm);
-router.post('/new-organization', organizationValidation, processNewOrganizationForm);
-router.get('/edit-organization/:id', showEditOrganizationForm);
-router.post('/edit-organization/:id', organizationValidation, processEditOrganizationForm);
+// --- RUTAS DE ORGANIZACIONES (Protegidas con requireRole('admin')) ---
+router.get('/new-organization', requireRole('admin'), showNewOrganizationForm);
+router.post('/new-organization', requireRole('admin'), organizationValidation, processNewOrganizationForm);
+router.get('/edit-organization/:id', requireRole('admin'), showEditOrganizationForm);
+router.post('/edit-organization/:id', requireRole('admin'), organizationValidation, processEditOrganizationForm);
 router.get('/organization/:id', showOrganizationDetailsPage);
 
-// --- RUTAS DE PROYECTOS ---
-router.get('/new-project', showNewProjectForm);
-router.post('/new-project', projectValidation, processNewProjectForm);
-router.get('/edit-project/:id', showEditProjectForm);
-router.post('/edit-project/:id', projectValidation, processEditProjectForm);
+// --- RUTAS DE PROYECTOS (Protegidas con requireRole('admin')) ---
+router.get('/new-project', requireRole('admin'), showNewProjectForm);
+router.post('/new-project', requireRole('admin'), projectValidation, processNewProjectForm);
+router.get('/edit-project/:id', requireRole('admin'), showEditProjectForm);
+router.post('/edit-project/:id', requireRole('admin'), projectValidation, processEditProjectForm);
 router.get('/project/:id', showProjectDetailsPage);
 
-// --- RUTAS DE CATEGORÍAS ---
+// --- RUTAS DE CATEGORÍAS (Protegidas con requireRole('admin')) ---
+router.get('/new-category', requireRole('admin'), showNewCategoryForm);
+router.post('/new-category', requireRole('admin'), categoryValidation, processNewCategoryForm);
+router.get('/edit-category/:id', requireRole('admin'), showEditCategoryForm);
+router.post('/edit-category/:id', requireRole('admin'), categoryValidation, processEditCategoryForm);
 router.get('/category/:id', showCategoryDetailsPage);
-router.get('/categories', showCategoriesPage);
-router.get('/new-category', showNewCategoryForm);
-router.post('/new-category', categoryValidation, processNewCategoryForm);
-router.get('/edit-category/:id', showEditCategoryForm);
-router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
-router.get('/category/:id', showCategoryDetailsPage);
+
+// User login routes
+router.get('/login', showLoginForm);
+router.post('/login', processLoginForm);
+router.get('/logout', processLogout);
+router.get('/dashboard', requireLogin, showDashboard);
 
 // --- RUTA DE PRUEBA DE ERRORES ---
 router.get('/test-error', testErrorPage);
 
 // --- PIPELINE DE ERRORES ---
-// 1. Captura cualquier ruta que no haya coincidido con las anteriores
 router.use(handle404);
-
-// 2. Manejador global que recibe los errores pasados mediante next(err)
 router.use(globalErrorHandler);
 
 export default router;

@@ -2,10 +2,12 @@
 <main class="container py-4">
     <h1><%= title %></h1>
 
-    <!-- Botón para añadir una nueva categoría -->
-    <div class="mb-4" style="margin-bottom: 1.5rem;">
-        <a href="/new-category" class="btn-primary" style="display: inline-block; text-decoration: none;">Add New Category</a>
-    </div>
+    <!-- Botón para añadir una nueva categoría (Solo visible para administradores) -->
+    <% if (user && user.role_name === 'admin') { %>
+        <div class="mb-4" style="margin-bottom: 1.5rem;">
+            <a href="/new-category" class="btn-primary" style="display: inline-block; text-decoration: none;">Add New Category</a>
+        </div>
+    <% } %>
 
     <% if (categories && categories.length > 0) { %>
         <ul>

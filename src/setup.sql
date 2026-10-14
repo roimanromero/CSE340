@@ -164,3 +164,17 @@ JOIN roles r ON u.role_id = r.role_id;
 
 -- Delete the test user
 DELETE FROM users WHERE email = 'test@example.com';
+
+-- Verifica los usuarios y roles existentes
+SELECT * FROM users;
+SELECT * FROM roles;
+
+-- Actualiza la cuenta de prueba para asignarle el rol de 'admin', por cierto, la contraseña es 'cse340!' (asegúrate de cambiarla después de la prueba) 
+UPDATE users 
+SET role_id = (SELECT role_id FROM roles WHERE role_name = 'admin') 
+WHERE email = 'admin@example.com';
+
+-- Verifica que la actualización haya sido exitosa
+SELECT users.user_id, users.email, roles.role_name 
+FROM users 
+JOIN roles ON users.role_id = roles.role_id;
