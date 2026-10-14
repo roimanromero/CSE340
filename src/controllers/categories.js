@@ -2,6 +2,7 @@ import {
     getAllCategories, 
     getCategoryById, 
     getCategoriesByProjectId, 
+    getProjectsByCategoryId,
     createCategory, 
     updateCategory 
 } from '../models/categories.js';
@@ -27,7 +28,6 @@ const showCategoriesPage = async (req, res, next) => {
 const showCategoryDetailsPage = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
-        // Usamos getCategoryById tal como está definido en tu modelo
         const category = await getCategoryById(categoryId);
 
         if (!category) {
@@ -36,8 +36,11 @@ const showCategoryDetailsPage = async (req, res, next) => {
             return next(error);
         }
 
+        // Obtener los proyectos asociados a esta categoría
+        const projects = await getProjectsByCategoryId(categoryId);
         const title = category.name;
-        res.render('category', { title, category });
+
+        res.render('category', { title, category, projects });
     } catch (error) {
         next(error);
     }
