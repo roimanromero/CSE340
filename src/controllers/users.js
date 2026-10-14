@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { createUser, authenticateUser, getAllUsersWithRoles } from '../models/users.js';
 
 const showUserRegistrationForm = (req, res) => {
@@ -8,8 +9,11 @@ const processUserRegistrationForm = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        // Llamamos a la función createUser del modelo para registrar al usuario (por defecto con rol de usuario regular)
-        const newUser = await createUser(name, email, password);
+        // Hashear la contraseña antes de guardarla para que sea compatible con bcrypt.compare en el login
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const newUser = await createUser(name, email, hashedPassword);
         
         if (newUser) {
             req.flash('success', 'Registration successful! Please log in.');
@@ -24,6 +28,7 @@ const processUserRegistrationForm = async (req, res) => {
         return res.redirect('/register');
     }
 };
+
 const showLoginForm = (req, res) => {
     res.render('login', { title: 'Login' });
 };
