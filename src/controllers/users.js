@@ -5,10 +5,25 @@ const showUserRegistrationForm = (req, res) => {
 };
 
 const processUserRegistrationForm = async (req, res) => {
-    // Aquí puedes incluir la lógica para procesar el registro si la necesitas,
-    // o dejarla preparada para cuando la implementes en tu proyecto.
-};
+    const { name, email, password } = req.body;
 
+    try {
+        // Llamamos a la función createUser del modelo para registrar al usuario (por defecto con rol de usuario regular)
+        const newUser = await createUser(name, email, password);
+        
+        if (newUser) {
+            req.flash('success', 'Registration successful! Please log in.');
+            return res.redirect('/login');
+        } else {
+            req.flash('error', 'Could not register user. Please try again.');
+            return res.redirect('/register');
+        }
+    } catch (error) {
+        console.error('Error during registration:', error);
+        req.flash('error', 'An error occurred during registration. Email might already be in use.');
+        return res.redirect('/register');
+    }
+};
 const showLoginForm = (req, res) => {
     res.render('login', { title: 'Login' });
 };
