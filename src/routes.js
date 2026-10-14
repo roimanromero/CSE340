@@ -1,5 +1,6 @@
 import express from 'express';
 import { showHomePage } from './controllers/index.js';
+import { showUserRegistrationForm, processUserRegistrationForm } from './controllers/users.js';
 import { 
     showOrganizationsPage, 
     showOrganizationDetailsPage, 
@@ -38,6 +39,9 @@ router.get('/', showHomePage);
 router.get('/organizations', showOrganizationsPage);
 router.get('/projects', showProjectsPage);
 router.get('/categories', showCategoriesPage);
+
+router.get('/register', showUserRegistrationForm);
+router.post('/register', processUserRegistrationForm);
 
 // --- RUTAS DE ORGANIZACIONES ---
 router.get('/new-organization', showNewOrganizationForm);

@@ -1,4 +1,7 @@
-CREATE TABLE organizations (
+-- ========================================
+-- Create table: Organizations
+-- ========================================
+CREATE TABLE IF NOT EXISTS organizations (
     organization_id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     description TEXT NOT NULL,
@@ -23,9 +26,17 @@ CREATE TABLE IF NOT EXISTS projects (
 );
 
 -- ========================================
+-- Insert sample data: Organizations (¡Primero las organizaciones para que existan los IDs 1, 2 y 3!)
+-- ========================================
+INSERT INTO organizations (name, description, contact_email, logo_filename)
+VALUES
+('Bright Future Foundation', 'Supporting community development and local infrastructure.', 'contact@brightfuture.org', 'brightfuture-logo.png'),
+('GreenHarvest Initiative', 'Promoting urban agriculture and sustainable food systems.', 'info@greenharvest.org', 'greenharvest-logo.png'),
+('UnityServe Network', 'Connecting volunteers with local community needs.', 'support@unityserve.org', 'unityserve-logo.png');
+
+-- ========================================
 -- Insert sample data: Projects
 -- ========================================
--- Assuming organization_id 1, 2, and 3 exist from your organizations table
 INSERT INTO projects (organization_id, title, description, location, date)
 VALUES
 (1, 'Community Center Roof Repair', 'Help us fix the roof of the local youth center.', '123 Main St', '2026-04-15'),
@@ -45,16 +56,6 @@ VALUES
 (3, 'Senior Tech Support Day', 'Helping elderly residents learn how to use smartphones and computers.', 'Senior Living Center', '2026-05-08'),
 (3, 'Soup Kitchen Food Prep', 'Chopping vegetables and preparing meals for the shelter.', 'Downtown Kitchen', '2026-05-15'),
 (3, 'Neighborhood Cleanup Drive', 'Collecting litter and tidying up public spaces.', 'Eastside District', '2026-05-30');
-
-SELECT * FROM projects;
-
-SELECT 
-    p.project_id, 
-    p.title, 
-    p.date, 
-    o.name AS organization_name
-FROM projects p
-JOIN organizations o ON p.organization_id = o.organization_id;
 
 -- ========================================
 -- Create table: Categories
@@ -94,21 +95,72 @@ VALUES
 -- ========================================
 -- Associate Projects with Categories
 -- ========================================
--- Linking sample projects to categories based on their IDs
 INSERT INTO project_categories (project_id, category_id)
 VALUES
-(1, 3), (1, 1), -- Project 1 linked to Community Service and Environmental
-(2, 1),         -- Project 2 linked to Environmental
-(3, 2),         -- Project 3 linked to Educational
-(4, 3),         -- Project 4 linked to Community Service
-(5, 3),         -- Project 5 linked to Community Service
-(6, 1),         -- Project 6 linked to Environmental
-(7, 2),         -- Project 7 linked to Educational
-(8, 2),         -- Project 8 linked to Educational
-(9, 1),         -- Project 9 linked to Environmental
-(10, 3),        -- Project 10 linked to Community Service
-(11, 4),        -- Project 11 linked to Health and Wellness
-(12, 3),        -- Project 12 linked to Community Service
-(13, 2),        -- Project 13 linked to Educational
-(14, 4),        -- Project 14 linked to Health and Wellness
-(15, 1);        -- Project 15 linked to Environmental
+(1, 3), (1, 1), 
+(2, 1),         
+(3, 2),         
+(4, 3),         
+(5, 3),         
+(6, 1),         
+(7, 2),         
+(8, 2),         
+(9, 1),         
+(10, 3),        
+(11, 4),        
+(12, 3),        
+(13, 2),        
+(14, 4),        
+(15, 1);        
+
+-- ========================================
+-- Update project dates dynamically
+-- ========================================
+UPDATE projects 
+SET date = CURRENT_DATE + (project_id * INTERVAL '3 days');
+
+-- ========================================
+-- Select Queries for Verification
+-- ========================================
+SELECT * FROM organizations;
+
+SELECT 
+    p.project_id, 
+    p.title, 
+    p.date, 
+    o.name AS organization_name
+FROM projects p
+JOIN organizations o ON p.organization_id = o.organization_id;
+
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL,
+    role_description TEXT
+);
+INSERT INTO roles (role_name, role_description) VALUES 
+    ('user', 'Standard user with basic access'),
+    ('admin', 'Administrator with full system access');
+
+-- Verify the data was inserted
+SELECT * FROM roles;
+
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role_id INTEGER REFERENCES roles(role_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert a test user
+INSERT INTO users (name, email, password_hash, role_id) 
+VALUES ('testuser', 'test@example.com', 'placeholder_hash', 1);
+
+-- Join users and roles to see complete information
+SELECT u.user_id, u.name, u.email, r.role_name, r.role_description
+FROM users u
+JOIN roles r ON u.role_id = r.role_id;
+
+-- Delete the test user
+DELETE FROM users WHERE email = 'test@example.com';
