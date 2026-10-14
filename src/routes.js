@@ -18,9 +18,19 @@ import {
     processEditProjectForm, 
     projectValidation 
 } from './controllers/projects.js';
-import { showCategoriesPage, showCategoryDetailsPage } from './controllers/categories.js';
+
 import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
 
+
+import { 
+    showCategoriesPage, 
+    showCategoryDetailsPage, 
+    showNewCategoryForm, 
+    processNewCategoryForm, 
+    showEditCategoryForm, 
+    processEditCategoryForm, 
+    categoryValidation 
+} from './controllers/categories.js';
 const router = express.Router();
 
 // --- RUTAS PRINCIPALES ---
@@ -44,6 +54,12 @@ router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 router.get('/project/:id', showProjectDetailsPage);
 
 // --- RUTAS DE CATEGORÍAS ---
+router.get('/category/:id', showCategoryDetailsPage);
+router.get('/categories', showCategoriesPage);
+router.get('/new-category', showNewCategoryForm);
+router.post('/new-category', categoryValidation, processNewCategoryForm);
+router.get('/edit-category/:id', showEditCategoryForm);
+router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
 router.get('/category/:id', showCategoryDetailsPage);
 
 // --- RUTA DE PRUEBA DE ERRORES ---

@@ -6,8 +6,9 @@
     --accent-color: #00897b;      /* Vibrant teal for eye-catching hovers */
     --bg-color: #f4f7f6;          /* Clean off-white background */
     --card-bg: #ffffff;           /* White card background */
-    --text-primary: #1a1a1a;     /* Dark charcoal for high contrast body text */
-    --text-muted: #555555;       /* Medium grey for secondary details */
+    --text-primary: #1a1a1a;      /* Dark charcoal for high contrast body text */
+    --text-muted: #555555;        /* Medium grey for secondary details */
+    --border-color: #cbd5e1;      /* Border color for form controls */
     --border-radius: 8px;
     --transition-speed: 0.3s;
 }
@@ -95,32 +96,32 @@ body {
     }
 
     /* Flash message styles */
-.flash-message {
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-.flash-message.success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-.flash-message.error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-.flash-message.warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeeba;
-}
-.flash-message.info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
-}
+    .flash-message {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+    .flash-message.success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    .flash-message.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    .flash-message.warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+    .flash-message.info {
+        color: #0c5460;
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+    }
 
     /* Main Content Area */
     main {
@@ -164,6 +165,95 @@ body {
             &:hover {
                 transform: translateY(-4px);
                 box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        /* ==========================================================================
+           Professional Form Layout & Interactive Controls
+           ========================================================================== */
+        form {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+
+                label {
+                    font-weight: 600;
+                    color: var(--text-primary);
+                    font-size: 0.95rem;
+                }
+
+                input[type="text"],
+                input[type="email"],
+                input[type="date"],
+                select,
+                textarea {
+                    width: 100%;
+                    padding: 0.75rem 1rem;
+                    font-size: 1rem;
+                    font-family: inherit;
+                    color: var(--text-primary);
+                    background-color: #fafafa;
+                    border: 1px solid var(--border-color);
+                    border-radius: var(--border-radius);
+                    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease;
+
+                    &:hover {
+                        border-color: var(--accent-color);
+                    }
+
+                    &:focus {
+                        outline: none;
+                        border-color: var(--accent-color);
+                        background-color: #ffffff;
+                        box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.15);
+                    }
+                }
+
+                textarea {
+                    resize: vertical;
+                    min-height: 120px;
+                }
+
+                select {
+                    cursor: pointer;
+                }
+            }
+
+            button[type="submit"],
+            .btn-primary {
+                align-self: flex-start;
+                background-color: var(--primary-color);
+                color: #ffffff;
+                font-weight: 700;
+                font-size: 1rem;
+                padding: 0.75rem 1.75rem;
+                border: none;
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                margin-top: 0.5rem;
+                transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+                box-shadow: 0 2px 6px rgba(13, 71, 161, 0.2);
+
+                &:hover {
+                    background-color: var(--accent-color);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 137, 123, 0.3);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                }
+
+                &:focus-visible {
+                    outline: 3px solid var(--accent-color);
+                    outline-offset: 2px;
+                }
             }
         }
 
@@ -266,10 +356,16 @@ body {
                 font-size: 1.25rem;
             }
 
+            form button[type="submit"],
+            form .btn-primary {
+                width: 100%;
+                align-self: stretch;
+            }
+
             .org-list .org-card {
                 flex-direction: column;
                 text-align: center;
-                gap: 1rem;
+                gap: 1.0rem;
 
                 .org-logo {
                     width: 80px;
