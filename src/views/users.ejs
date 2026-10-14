@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<main class="container py-4">
+    <h1><%= title %></h1>
+
+    <% if (users && users.length > 0) { %>
+        <table class="table" border="1" cellpadding="8" style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email (Username)</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(userItem => { %>
+                    <tr>
+                        <td><%= userItem.user_id %></td>
+                        <td><%= userItem.name %></td>
+                        <td><%= userItem.email %></td>
+                        <td><strong><%= userItem.role_name %></strong></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No registered users found.</p>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %>

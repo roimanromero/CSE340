@@ -8,7 +8,8 @@ import {
     processLogout, 
     requireLogin, 
     showDashboard, 
-    requireRole 
+    requireRole,
+    showUsersPage // <--- 1. Importar la nueva función
 } from './controllers/users.js';
 import { 
     showOrganizationsPage, 
@@ -76,6 +77,9 @@ router.get('/login', showLoginForm);
 router.post('/login', processLoginForm);
 router.get('/logout', processLogout);
 router.get('/dashboard', requireLogin, showDashboard);
+
+// --- RUTA DE USUARIOS (Solo Administradores) ---
+router.get('/users', requireRole('admin'), showUsersPage); // <--- 2. Agregar ruta protegida
 
 // --- RUTA DE PRUEBA DE ERRORES ---
 router.get('/test-error', testErrorPage);

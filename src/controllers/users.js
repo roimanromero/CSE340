@@ -1,4 +1,4 @@
-import { createUser, authenticateUser } from '../models/users.js';
+import { createUser, authenticateUser, getAllUsersWithRoles } from '../models/users.js';
 
 const showUserRegistrationForm = (req, res) => {
     res.render('register', { title: 'Register' });
@@ -38,6 +38,7 @@ const processLoginForm = async (req, res) => {
         return res.redirect('/login');
     }
 };
+
 const requireLogin = (req, res, next) => {
     if (!req.session || !req.session.user) {
         req.flash('error', 'You must be logged in to access that page.');
@@ -62,13 +63,14 @@ const requireRole = (role) => {
         // Check if user's role matches the required role
         if (req.session.user.role_name !== role) {
             req.flash('error', 'You do not have permission to access this page.');
-            return res.redirect('/');
+            return res.redirect('/dashboard'); // Redirige al dashboard si no es admin (según requerimiento W05)
         }
 
         // User has required role, continue
         next();
     };
 };
+
 const processLogout = async (req, res) => {
     if (req.session.user) {
         delete req.session.user;
@@ -87,6 +89,22 @@ const showDashboard = (req, res) => {
     });
 };
 
+/**
+ * Muestra la página con todos los usuarios registrados (Solo para Administradores)
+ */
+const showUsersPage = async (req, res, next) => {
+    try {
+        const users = await getAllUsersWithRoles();
+        res.render('users', {
+            title: 'Registered Users',
+            users: users
+        });
+    } catch (error) {
+        console.error('Error fetching users list:', error);
+        next(error);
+    }
+};
+
 export { 
     showUserRegistrationForm, 
     processUserRegistrationForm, 
@@ -95,5 +113,6 @@ export {
     processLogout,
     requireLogin,
     showDashboard,
-    requireRole
+    requireRole,
+    showUsersPage
 };
