@@ -1,54 +1,54 @@
 import express from 'express';
-import { showOrganizationDetailsPage } from './controllers/organizations.js';
 import { showHomePage } from './controllers/index.js';
-import { showOrganizationsPage } from './controllers/organizations.js';
-import { showNewOrganizationForm } from './controllers/organizations.js';
-import { showProjectsPage, showProjectDetailsPage } from './controllers/projects.js';
+import { 
+    showOrganizationsPage, 
+    showOrganizationDetailsPage, 
+    showNewOrganizationForm, 
+    processNewOrganizationForm, 
+    showEditOrganizationForm, 
+    processEditOrganizationForm, 
+    organizationValidation 
+} from './controllers/organizations.js';
+import { 
+    showProjectsPage, 
+    showProjectDetailsPage, 
+    showNewProjectForm, 
+    processNewProjectForm, 
+    showEditProjectForm, 
+    processEditProjectForm, 
+    projectValidation 
+} from './controllers/projects.js';
 import { showCategoriesPage, showCategoryDetailsPage } from './controllers/categories.js';
 import { testErrorPage, handle404, globalErrorHandler } from './controllers/errors.js';
-import { processNewOrganizationForm } from './controllers/organizations.js';
-import { organizationValidation} from './controllers/organizations.js';
-import { showEditOrganizationForm } from './controllers/organizations.js';
-import { processEditOrganizationForm } from './controllers/organizations.js';
-import { processNewProjectForm } from './controllers/projects.js';
-import { showNewProjectForm } from './controllers/projects.js';
-import { projectValidation } from './controllers/projects.js';
 
 const router = express.Router();
 
-// Rutas principales de la aplicación
+// --- RUTAS PRINCIPALES ---
 router.get('/', showHomePage);
 router.get('/organizations', showOrganizationsPage);
 router.get('/projects', showProjectsPage);
 router.get('/categories', showCategoriesPage);
-// Route to handle new organization form submission
+
+// --- RUTAS DE ORGANIZACIONES ---
+router.get('/new-organization', showNewOrganizationForm);
 router.post('/new-organization', organizationValidation, processNewOrganizationForm);
-
-// Route to display the edit organization form
 router.get('/edit-organization/:id', showEditOrganizationForm);
-
-// Route to handle the edit organization form submission
-// Route to handle the edit organization form submission
 router.post('/edit-organization/:id', organizationValidation, processEditOrganizationForm);
-// Ruta para probar el flujo de errores intencionalmente
-router.get('/test-error', testErrorPage);
-
-// Route for organization details page
 router.get('/organization/:id', showOrganizationDetailsPage);
 
-// Route for project details page
-router.get('/project/:id', showProjectDetailsPage);
-// Route for new project page
+// --- RUTAS DE PROYECTOS ---
 router.get('/new-project', showNewProjectForm);
-
-// Route to handle new project form submission
-router.post('/new-project', processNewProjectForm);
-
-// Route to handle new project form submission with validation
 router.post('/new-project', projectValidation, processNewProjectForm);
+router.get('/edit-project/:id', showEditProjectForm);
+router.post('/edit-project/:id', projectValidation, processEditProjectForm);
+router.get('/project/:id', showProjectDetailsPage);
 
+// --- RUTAS DE CATEGORÍAS ---
 router.get('/category/:id', showCategoryDetailsPage);
-router.get('/new-organization', showNewOrganizationForm);
+
+// --- RUTA DE PRUEBA DE ERRORES ---
+router.get('/test-error', testErrorPage);
+
 // --- PIPELINE DE ERRORES ---
 // 1. Captura cualquier ruta que no haya coincidido con las anteriores
 router.use(handle404);

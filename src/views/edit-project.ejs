@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+<main class="container py-4">
+    <h1><%= title %></h1>
+
+    <form action="/edit-project/<%= project.project_id %>" method="POST">
+        <div class="mb-3">
+            <label for="title" class="form-label">Project Title</label>
+            <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                value="<%= project.title %>"
+                required
+                maxlength="200"
+            />
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+                class="form-control"
+                id="description"
+                name="description"
+                required
+                maxlength="1000"
+            ><%= project.description %></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input
+                type="text"
+                class="form-control"
+                id="location"
+                name="location"
+                value="<%= project.location %>"
+                required
+                maxlength="200"
+            />
+        </div>
+
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input
+                type="date"
+                class="form-control"
+                id="date"
+                name="date"
+                value="<%= project.date ? new Date(project.date).toISOString().split('T')[0] : '' %>"
+                required
+            />
+        </div>
+
+        <div class="mb-3">
+            <label for="organizationId" class="form-label">Organization</label>
+            <select class="form-select" id="organizationId" name="organizationId" required>
+                <option value="">Select an organization</option>
+                <% organizations.forEach(org => { %>
+                    <option value="<%= org.organization_id %>" <%= org.organization_id === project.organization_id ? 'selected' : '' %>>
+                        <%= org.name %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Project</button>
+    </form>
+</main>
+<%- include('partials/footer') %>
