@@ -135,6 +135,52 @@ const processEditProjectForm = async (req, res, next) => {
     }
 };
 
+import { getCategoriesByProjectId, getAllCategories, updateProjectCategories } from '../models/categories.js';
+
+const showAssignCategoriesForm = async (req, res, next) => {
+    try {
+        const projectId = req.params.id;
+        const project = await getProjectDetails(projectId);
+
+        if (!project) {
+            const error = new Error('Project not found');
+            error.status = 404;
+            return next(error);
+        }
+
+        const allCategories = await getAllCategories();
+        const projectCategories = await getCategoriesByProjectId(projectId);
+        const projectCategoryIds = projectCategories.map(cat => cat.category_id);
+
+        const title = `Assign Categories: ${project.title}`;
+
+        res.render('assign-categories', { title, project, allCategories, projectCategoryIds });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const processAssignCategoriesForm = async (req, res, next) => {
+    const projectId = req.params.id;
+    let { categories } = req.body;
+
+    if (!categories) {
+        categories = [];
+    } else if (!Array.isArray(categories)) {
+        categories = [categories];
+    }
+
+    try {
+        await updateProjectCategories(projectId, categories);
+        req.flash('success', 'Project categories updated successfully!');
+        return res.redirect(`/project/${projectId}`);
+    } catch (error) {
+        console.error('Error updating project categories:', error);
+        req.flash('error', 'There was an error updating the categories.');
+        return res.redirect(`/assign-categories/${projectId}`);
+    }
+};
+
 export { 
     showProjectsPage, 
     showProjectDetailsPage, 
@@ -142,5 +188,7 @@ export {
     processNewProjectForm, 
     projectValidation,
     showEditProjectForm,
-    processEditProjectForm
+    processEditProjectForm,
+    showAssignCategoriesForm,
+    processAssignCategoriesForm
 };

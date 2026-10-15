@@ -27,7 +27,9 @@ import {
     processNewProjectForm, 
     showEditProjectForm, 
     processEditProjectForm, 
-    projectValidation 
+    projectValidation,
+    showAssignCategoriesForm,
+    processAssignCategoriesForm
 } from './controllers/projects.js';
 import { 
     showCategoriesPage, 
@@ -64,6 +66,8 @@ router.post('/new-project', requireRole('admin'), projectValidation, processNewP
 router.get('/edit-project/:id', requireRole('admin'), showEditProjectForm);
 router.post('/edit-project/:id', requireRole('admin'), projectValidation, processEditProjectForm);
 router.get('/project/:id', showProjectDetailsPage);
+router.get('/assign-categories/:id', requireRole('admin'), showAssignCategoriesForm);
+router.post('/assign-categories/:id', requireRole('admin'), processAssignCategoriesForm);
 
 // --- RUTAS DE CATEGORÍAS (Protegidas con requireRole('admin')) ---
 router.get('/new-category', requireRole('admin'), showNewCategoryForm);

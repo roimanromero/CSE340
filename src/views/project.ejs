@@ -40,11 +40,12 @@
 
     </article>
     
-    <% if (user && user.role_name === 'admin') { %>
-        <div class="mb-3">
-            <a href="/edit-project/<%= project.project_id %>" class="btn btn-outline-primary btn-sm">Edit Project</a>
-        </div>
-    <% } %>
+<% if (user && user.role_name === 'admin') { %>
+    <div class="mb-3">
+        <a href="/edit-project/<%= project.project_id %>" class="btn btn-outline-primary btn-sm me-2">Edit Project</a>
+        <a href="/assign-categories/<%= project.project_id %>" class="btn btn-outline-secondary btn-sm">Assign Categories</a>
+    </div>
+<% } %>
 </main>
 
 <%- include('partials/footer') %>
