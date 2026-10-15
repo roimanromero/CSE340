@@ -135,7 +135,7 @@ const processEditProjectForm = async (req, res, next) => {
     }
 };
 
-import { getCategoriesByProjectId, getAllCategories, updateProjectCategories } from '../models/categories.js';
+import { getAllCategories, updateProjectCategories } from '../models/categories.js';
 
 const showAssignCategoriesForm = async (req, res, next) => {
     try {
