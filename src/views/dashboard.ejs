@@ -1,15 +1,43 @@
-<%- include('partials/header') %>
 
-<main>
-    <h1><%= title %></h1>
+    <%- include('partials/header') %>
 
-    <h2>Dashboard</h2>
-    <p>Name: <%= name %></p>
-    <p>Username: <%= email %></p>
+<main class="container py-4">
+    <h1 class="mb-3"><%= title %></h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2>User Profile</h2>
+            <p class="mb-1"><strong>Name:</strong> <%= name %></p>
+            <p class="mb-0"><strong>Email:</strong> <%= email %></p>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <h2>My Volunteer Projects</h2>
+        <% if (volunteeredProjects && volunteeredProjects.length > 0) { %>
+            <div class="list-group">
+                <% volunteeredProjects.forEach(project => { %>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">
+                                <a href="/project/<%= project.project_id %>"><%= project.title %></a>
+                            </h5>
+                            <p class="mb-1 text-muted"><small>Organization: <%= project.organization_name %> | Location: <%= project.location %></small></p>
+                        </div>
+                        <form action="/dashboard/unvolunteer/<%= project.project_id %>" method="POST" class="mb-0">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                        </form>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p class="text-muted">You have not signed up to volunteer for any projects yet.</p>
+        <% } %>
+    </div>
 
     <% if (user && user.role_name === 'admin') { %>
-        <div style="margin-top: 1.5rem;">
-            <a href="/users" class="btn" style="display: inline-block; text-decoration: none;">View Registered Users</a>
+        <div class="mb-3">
+            <a href="/users" class="btn btn-secondary btn-sm">View Registered Users</a>
         </div>
     <% } %>
 </main>

@@ -46,6 +46,23 @@
         <a href="/assign-categories/<%= project.project_id %>" class="btn btn-outline-secondary btn-sm">Assign Categories</a>
     </div>
 <% } %>
+
+<% if (user) { %>
+    <div class="mt-4 p-3 border rounded bg-light">
+        <h3>Volunteer Status</h3>
+        <% if (isVolunteering) { %>
+            <p class="text-success mb-2"><strong>You are volunteering for this project!</strong></p>
+            <form action="/project/<%= project.project_id %>/unvolunteer" method="POST">
+                <button type="submit" class="btn btn-danger btn-sm">Remove Me as Volunteer</button>
+            </form>
+        <% } else { %>
+            <form action="/project/<%= project.project_id %>/volunteer" method="POST">
+                <button type="submit" class="btn btn-primary btn-sm">Volunteer for this Project</button>
+            </form>
+        <% } %>
+    </div>
+<% } %>
+
 </main>
 
 <%- include('partials/footer') %>

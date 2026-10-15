@@ -29,7 +29,10 @@ import {
     processEditProjectForm, 
     projectValidation,
     showAssignCategoriesForm,
-    processAssignCategoriesForm
+    processAssignCategoriesForm,
+    processAddVolunteer,
+    processRemoveVolunteer,
+    processDashboardRemoveVolunteer
 } from './controllers/projects.js';
 import { 
     showCategoriesPage, 
@@ -81,6 +84,10 @@ router.get('/login', showLoginForm);
 router.post('/login', processLoginForm);
 router.get('/logout', processLogout);
 router.get('/dashboard', requireLogin, showDashboard);
+
+router.post('/project/:id/volunteer', requireLogin, processAddVolunteer);
+router.post('/project/:id/unvolunteer', requireLogin, processRemoveVolunteer);
+router.post('/dashboard/unvolunteer/:id', requireLogin, processDashboardRemoveVolunteer);
 
 // --- RUTA DE USUARIOS (Solo Administradores) ---
 router.get('/users', requireRole('admin'), showUsersPage); // <--- 2. Agregar ruta protegida
